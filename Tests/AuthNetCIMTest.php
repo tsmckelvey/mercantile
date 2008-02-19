@@ -9,6 +9,15 @@ class AuthNetCIMTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
     }
+    public function testGateway_validCredentials()
+    {
+        $credentials = array(
+            'login'     => '8954jM4pCcWZ',
+            'tran_key'  => '7828uzaA6j83MHQr'
+            );
+
+        $gateway = new Mercantile_Gateways_AuthNetCIM($credentials);
+    }
     public function testGateway_validParams()
     {
         $credentials = array(
@@ -24,7 +33,7 @@ class AuthNetCIMTest extends PHPUnit_Framework_TestCase
     {
 
     }
-    public function xtestGateway_createCustomerProfile()
+    public function testGateway_createCustomerProfile()
     {
         $credentials = array(
             'login'     => '8954jM4pCcWZ',
@@ -45,11 +54,6 @@ class AuthNetCIMTest extends PHPUnit_Framework_TestCase
         $response = $gateway->createCustomerProfile(null, $cusProfile);
         
         $this->assertType('Mercantile_Gateway_Response', $response);
-
-        print_r($response->getMessages());
-        print_r($response->getParams());
-
-        echo $gateway->getLastRequest();
     }
     public function testGateway_getCustomerProfile()
     {
@@ -66,9 +70,6 @@ class AuthNetCIMTest extends PHPUnit_Framework_TestCase
 
         $this->assertType('Mercantile_Gateway_Response', $response);
         $this->assertTrue($response->isSuccess());
-
-        print_r($response->getParams());
-        print_r($response->getMessages());
     }
     public function testGateway_createCustomerPaymentProfile()
     {

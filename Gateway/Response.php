@@ -24,6 +24,20 @@ class Mercantile_Gateway_Response
         }
     }
 
+    public function __toString()
+    {
+        $output = <<<OUT
+Success: %s
+Messages:
+%s
+Params:
+%s
+OUT;
+                return sprintf($output, (int)print_r($this->isSuccess(), true),
+                                        print_r($this->getMessages(), true),
+                                        print_r($this->getParams(), true));
+    }
+
     /**
      * Set success attribute
      */
