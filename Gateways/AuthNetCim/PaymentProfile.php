@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Mercantile_Gateways
+ * @subpackage AuthNetCim
+ */
 class Mercantile_Gateways_AuthNetCim_PaymentProfile extends DOMDocument
 {
     public function __construct()

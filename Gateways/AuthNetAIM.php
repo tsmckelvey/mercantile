@@ -1,14 +1,11 @@
 <?php
-require_once 'Mercantile/Gateway.php';
-require_once 'Mercantile/Gateway/Interface.php';
-require_once 'Zend/Http/Client.php';
-
 /**
  * Mercantile_Gateways_AuthNetAIM
  *
- * will Supports AIM, ARB, and CIM
+ * @package Mercantile_Gateways
+ * @subpackage AuthNetAim
  */
-class Mercantile_Gateways_AuthNetAIM implements Mercantile_Gateway_Interface
+class Mercantile_Gateways_AuthNetAim implements Mercantile_Gateway_Interface
 {
     const API_VERSION      = 3.1;
     const API_LIVE_ENDPOINT    = 'https://secure.authorize.net/gateway/transact.dll';
@@ -228,7 +225,7 @@ class Mercantile_Gateways_AuthNetAIM implements Mercantile_Gateway_Interface
             'transaction_id'=> $response[7]
             );
 
-        return new Mercantile_Gateway_Response($success, $messages, $params);
+        return new Mercantile_Gateways_AuthNetAim_Response($success, $messages, $params);
     }
 
     /**

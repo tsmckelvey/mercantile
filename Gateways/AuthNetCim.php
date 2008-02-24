@@ -1,6 +1,9 @@
 <?php
 /**
- * Class for working with ANET's innovative CIM API
+ * @copyright Copyright (c) 2007-2008 Thomas McKelvey
+ * @license <license> New BSD License
+ * @package Mercantile_Gateways
+ * @subpackage AuthNetCim
  */
 class Mercantile_Gateways_AuthNetCim
 {
@@ -70,7 +73,7 @@ class Mercantile_Gateways_AuthNetCim
         // @TODO: validate $response is string
         $responseDoc = new DOMDocument();
 
-        $responseDoc->loadXML($response);
+        $responseDoc->loadXML($response, LIBXML_NOWARNING);
 
         $responseDoc->formatOutput = true;
 
@@ -89,17 +92,22 @@ class Mercantile_Gateways_AuthNetCim
 
         switch ($responseDoc->documentElement->nodeName) {
             case 'ErrorResponse':
-                //$success = false;
+                $success = false;
                 break;
             case 'createCustomerProfileResponse':
-                $params['customerProfileId'] = $responseDoc->getElementsByTagName('customerProfileId')
-                                                           ->item(0)
-                                                           ->textContent;
+                // if success true, because we CAN have error response codes in this response
+                if ($success == true) {
+                    $params['customerProfileId'] = $responseDoc->getElementsByTagName('customerProfileId')
+                                                               ->item(0)
+                                                               ->textContent;
+                }
                 break;
             default:
+                break;
         }
 
-        return new Mercantile_Gateway_Response($success, $messages, $params);
+        //return new Mercantile_Gateway_Response($success, $messages, $params);
+        return new Mercantile_Gateways_AuthNetCim_Response($success, $messages, $params);
     }
 
     /**
@@ -165,6 +173,11 @@ class Mercantile_Gateways_AuthNetCim
         $response = $this->_request('getCustomerProfileRequest', $cusProfileIdDoc, $refId);
 
         return $response;
+    }
+
+    public function updateCustomerProfile($cusProfileId = null, $refId = null)
+    {
+
     }
 
     public function deleteCustomerProfile($cusProfileId = null, $refId = null)
