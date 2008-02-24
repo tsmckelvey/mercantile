@@ -7,6 +7,8 @@ require_once 'Zend/Validate.php';
  * CC object for storing credentials in
  * please dont serialize or store the CC data
  * unless you're PCI compliant, thx
+ *
+ * @package Mercantile_Billing
  */
 class Mercantile_Billing_CreditCard
 {

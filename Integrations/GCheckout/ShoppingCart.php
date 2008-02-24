@@ -3,6 +3,9 @@
  * Create, manage, and manipulate a Google Checkout
  * shopping-cart DOM node.  Wrapper class for DOMDocument
  * implementation of Google's shopping-cart API element.
+ *
+ * @package Mercantile_Integrations
+ * @subpackage GCheckout
  */
 class Mercantile_Integrations_GCheckout_ShoppingCart
 {

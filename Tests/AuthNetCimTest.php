@@ -38,6 +38,9 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $this->gateway = null;
     }
+    /**
+     * Instantiate an AuthNetCim class with credentials
+     */
     public function testConstructor_validCredentials()
     {
         $credentials = array(
@@ -47,6 +50,9 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $gateway = new Mercantile_Gateways_AuthNetCim($credentials);
     }
+    /**
+     * Create a customer profile
+     */
     public function testCreateCustomerProfile()
     {
         $options = array('description' => (string)$this->_randStr());
@@ -55,12 +61,13 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $response = $this->gateway->createCustomerProfile($cusProfile);
 
-        $params = $response->getParams();
-        
-        $this->customerProfileId = $params['customerProfileId'];
+        $this->customerProfileId = $response->getCustomerProfileId();
 
         $this->assertTrue($response->isSuccess());
     }
+    /**
+     * Create a customer profile, then attempt to create another with the same description
+     */
     public function testCreateCustomerProfile_duplicateIdAndFails()
     {
         $options = array('description' => (string)$this->_randStr(),
@@ -71,14 +78,15 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $response = $this->gateway->createCustomerProfile($cusProfile);
 
-        $params = $response->getParams();
-
-        $this->customerProfileId = $params['customerProfileId'];
+        $this->customerProfileId = $response->getCustomerProfileId();
 
         $response = $this->gateway->createCustomerProfile($cusProfile);
 
         $this->assertFalse($response->isSuccess());
     }
+    /**
+     * Create a customer profile and delete the same profile
+     */
     public function testDeleteCustomerProfile_createsAndDeletesCustomerProfile()
     {
         $options = array('description' => (string)$this->_randStr());
@@ -87,13 +95,19 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $response = $this->gateway->createCustomerProfile($cusProfile);
 
-        $params = $response->getParams();
-        
-        $response = $this->gateway->deleteCustomerProfile($params['customerProfileId']);
+        $response = $this->gateway->deleteCustomerProfile($response->getCustomerProfileId());
 
         $this->assertTrue($response->isSuccess());
     }
-    public function testGateway_getCustomerProfile()
+    /**
+     * Get a customer profile
+     */
+    public function testGetCustomerProfile()
     {
+        self::testCreateCustomerProfile();
+
+        $response = $this->gateway->getCustomerProfile($this->customerProfileId);
+
+        $this->assertTrue($response->isSuccess());
     }
 }

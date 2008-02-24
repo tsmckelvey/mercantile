@@ -1,7 +1,11 @@
 <?php
-require_once '../Exception.php';
-
-class Mercantile_Gateway_Response
+/**
+ * @copyright Copyright (c) 2007-2008 Thomas McKelvey
+ * @license <license> New BSD License
+ * @package Mercantile
+ * @subpackage AuthNetCim
+ */
+class Mercantile_Response
 {
     private $_success = null;
 

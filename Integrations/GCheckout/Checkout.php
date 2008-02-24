@@ -3,6 +3,9 @@
 /**
  * GCheckout_Checkout assembles and posts all <checkout-shopping-cart>
  * requests.  A checkout request requires a shopping-cart item at the least.
+ *
+ * @package Mercantile_Integrations
+ * @subpackage GCheckout
  */
 class Mercantile_Integrations_GCheckout_Checkout
 {

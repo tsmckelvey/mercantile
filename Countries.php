@@ -1,6 +1,8 @@
 <?php
 /**
  * ISO-3166 2-Letter country codes 
+ *
+ * @package Mercantile
  */
 abstract class Mercantile_Countries
 {

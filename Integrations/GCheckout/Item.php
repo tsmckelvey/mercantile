@@ -2,6 +2,9 @@
 /**
  * Class for wrapping a DOMElement object with which we
  * can easily custom-tailor our items per the GCheckout API
+ *
+ * @package Mercantile_Integrations
+ * @subpackage GCheckout
  */
 class Mercantile_Integrations_GCheckout_Item
 {

@@ -5,6 +5,9 @@ require_once 'Zend/Http/Client.php';
 /**
  * Class for using the Google Checkout APIs,
  * generating Buy Now buttons, and testing user credentials
+ *
+ * @package Mercantile_Integrations
+ * @subpackage GCheckout
  */
 class Mercantile_Integrations_GCheckout
 {
