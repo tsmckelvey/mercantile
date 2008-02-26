@@ -1,7 +1,4 @@
 <?php
-require_once 'Mercantile/Gateway/Response.php';
-require_once 'Zend/Http/Client.php';
-
 /**
  * Class for using the Google Checkout APIs,
  * generating Buy Now buttons, and testing user credentials
@@ -108,7 +105,7 @@ class Mercantile_Integrations_GCheckout
                 break;
         }
 
-        return new Mercantile_Gateway_Response($success, $messages, $params);        
+        return new Mercantile_Integrations_GCheckout_Response($success, $messages, $params);
     }
 
     /**
