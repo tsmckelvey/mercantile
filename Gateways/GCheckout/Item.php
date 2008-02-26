@@ -3,10 +3,10 @@
  * Class for wrapping a DOMElement object with which we
  * can easily custom-tailor our items per the GCheckout API
  *
- * @package Mercantile_Integrations
+ * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-class Mercantile_Integrations_GCheckout_Item
+class Mercantile_Gateways_GCheckout_Item
 {
     protected $_itemDocument = null;
 

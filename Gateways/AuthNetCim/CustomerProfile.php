@@ -6,10 +6,12 @@
  */
 class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DOMDocument
 {
+    private $_paymentProfiles = array();
+
     /**
      * Top-level optional nodes
      */
-    protected $_optionalElements = array(
+    private $_optionalElements = array(
         'merchantCustomerId',
         'description',
         'email'
@@ -52,7 +54,8 @@ class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DOMDocument
 
     public function addPaymentProfile(Mercantile_Gateways_AuthNetCim_PaymentProfile $payProfile = null)
     {
-        // @TODO: validate for payProfile
+        $payProfile = $this->importNode($payProfile->documentElement, $deep = true);
 
+        $this->_paymentProfiles[] = $this->documentElement->appendChild($payProfile);
     }
 }

@@ -3,10 +3,10 @@
  * Class for using the Google Checkout APIs,
  * generating Buy Now buttons, and testing user credentials
  *
- * @package Mercantile_Integrations
+ * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-class Mercantile_Integrations_GCheckout
+class Mercantile_Gateways_GCheckout
 {
     const API_SANDBOX_ENDPOINT = 'https://sandbox.google.com/checkout/api/checkout/v2/request/Merchant/';
     const API_LIVE_ENDPOINT    = 'https://checkout.google.com/api/checkout/v2/request/Merchant/';
@@ -28,15 +28,17 @@ class Mercantile_Integrations_GCheckout
      */
     public function __construct(array $credentials = null)
     {
-        if (!isset($credentials['merchant_id']))
-            throw new Mercantile_Exception('"merchant_id" not string, is ' . gettype($credentials['merchant_id']));
+        if (!isset($credentials['merchant_id'])) {
+            throw new Mercantile_Exception('"merchant_id" not string, is ' . @gettype($credentials['merchant_id']));
+        } else {
+            $this->_credentials['merchant_id'] = $credentials['merchant_id'];
+        }
 
-        $this->_credentials['merchant_id'] = $credentials['merchant_id'];
-
-        if (!isset($credentials['merchant_key']))
-            throw new Mercantile_Exception('"merchant_key" not string, is ' . gettype($credentials['merchant_key']));
-
-        $this->_credentials['merchant_key'] = $credentials['merchant_key'];
+        if (!isset($credentials['merchant_key'])) {
+            throw new Mercantile_Exception('"merchant_key" not string, is ' . @gettype($credentials['merchant_key']));
+        } else {
+            $this->_credentials['merchant_key'] = $credentials['merchant_key'];
+        }
     }
 
     /**
@@ -105,7 +107,7 @@ class Mercantile_Integrations_GCheckout
                 break;
         }
 
-        return new Mercantile_Integrations_GCheckout_Response($success, $messages, $params);
+        return new Mercantile_Gateways_GCheckout_Response($success, $messages, $params);
     }
 
     /**
@@ -145,7 +147,7 @@ class Mercantile_Integrations_GCheckout
     static public function generateCheckoutButton(array $params = null, $sandbox = true)
     {
         if (!isset($params['merchant_id']))
-            throw new Mercantile_Exception('"merchant_id" ' . gettype($params['merchant_id']));
+            throw new Mercantile_Exception('"merchant_id" ' . @gettype($params['merchant_id']));
 
         if (!isset($params['size']) or !in_array($params['size'], array('large', 'medium', 'small')))
             $params['size'] = 'medium';
@@ -190,7 +192,7 @@ class Mercantile_Integrations_GCheckout
     {
         if (get_class($checkout) == 'DOMElement') {
             $checkout = $checkout->saveXML();
-        } elseif (get_class($checkout) == 'Mercantile_Integrations_GCheckout_Checkout') {
+        } elseif (get_class($checkout) == 'Mercantile_Gateways_GCheckout_Checkout') {
             $checkout = (string)$checkout;
         } else {
             throw new Mercantile_Exception('Checkout shopping cart wrong type, is ' . get_class($checkout));

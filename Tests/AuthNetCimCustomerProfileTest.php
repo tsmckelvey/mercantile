@@ -47,6 +47,8 @@ class AuthNetCimCustomerProfileTest extends PHPUnit_Framework_TestCase
         $payProfile = new Mercantile_Gateways_AuthNetCim_PaymentProfile();
 
         $this->cusProfile->addPaymentProfile($payProfile);
+
+        echo $this->cusProfile;
     }
     public function testAddPaymentProfile_invalidProfileAndThrowsException()
     {

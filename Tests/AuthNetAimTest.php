@@ -1,7 +1,7 @@
 <?php
 require 'Bootstrap.php';
 
-class AuthNetAIMTest extends PHPUnit_Framework_TestCase
+class AuthNetAimTest extends PHPUnit_Framework_TestCase
 {
     protected $cc = null;
 
@@ -17,7 +17,7 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
 
         if (isset($this->temp_trans)) {
             $gateway->void(array('transaction_id' => $this->temp_trans));
@@ -30,9 +30,9 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
 
-        $this->assertType('Mercantile_Gateways_AuthNetAIM', $gateway);
+        $this->assertType('Mercantile_Gateways_AuthNetAim', $gateway);
     }
     /**
      * Test AuthorizeNetGateway AUTH_ONLY 
@@ -58,7 +58,7 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
 
         $response = $gateway->authorize(1000, $cc, array('x_duplicate_window' => 0));
 
@@ -87,7 +87,7 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
 
         $response = $gateway->authorize(1000, $cc, array('x_duplicate_window' => 0));
 
@@ -112,7 +112,7 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
 
         $response = $gateway->authorize(1000, $cc, array('x_duplicate_window' => 0));
 
@@ -141,6 +141,6 @@ class AuthNetAIMTest extends PHPUnit_Framework_TestCase
             'tran_key'  => '7828uzaA6j83MHQr'
             );
 
-        $gateway = new Mercantile_Gateways_AuthNetAIM($credentials);
+        $gateway = new Mercantile_Gateways_AuthNetAim($credentials);
     }
 }

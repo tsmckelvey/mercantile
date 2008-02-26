@@ -4,10 +4,10 @@
  * GCheckout_Checkout assembles and posts all <checkout-shopping-cart>
  * requests.  A checkout request requires a shopping-cart item at the least.
  *
- * @package Mercantile_Integrations
+ * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-class Mercantile_Integrations_GCheckout_Checkout
+class Mercantile_Gateways_GCheckout_Checkout
 {
     // Google Checkout API Schema
     const CHECKOUT_XML_SCHEMA    = 'http://checkout.google.com/schema/2';
@@ -108,12 +108,12 @@ class Mercantile_Integrations_GCheckout_Checkout
      * Only one shopping-cart is accepted, if a second setShoppingCart
      * request is made the first one will be overwritten.
      *
-     * @param DOMElement|Mercantile_Integrations_GCheckout_ShoppingCart $cart The shopping-cart wrapper
+     * @param DOMElement|Mercantile_Gateways_GCheckout_ShoppingCart $cart The shopping-cart wrapper
      */
     public function setShoppingCart($cart = null)
     {
         if (get_class($cart) == 'DOMElement') {
-        } elseif (get_class($cart) == 'Mercantile_Integrations_GCheckout_ShoppingCart') {
+        } elseif (get_class($cart) == 'Mercantile_Gateways_GCheckout_ShoppingCart') {
             $cart = $cart->getShoppingCart();
         } else {
             throw new Mercantile_Exception('Cart wrong type, is ' . get_class($cart));
@@ -147,7 +147,7 @@ class Mercantile_Integrations_GCheckout_Checkout
     /**
      *
      */
-    public function setShippingMethod(Mercantile_Integrations_GCheckout_Shipping $method = null)
+    public function setShippingMethod(Mercantile_Gateways_GCheckout_Shipping $method = null)
     {
         $method = $this->_checkoutDocument->importNode($method->getRoot(), $deep = true);
 

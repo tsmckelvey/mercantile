@@ -12,9 +12,9 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
             'quantity' => 1
             );
 
-        $this->item = new Mercantile_Integrations_GCheckout_Item($itemInfo);
+        $this->item = new Mercantile_Gateways_GCheckout_Item($itemInfo);
     
-        $this->cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $this->cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
         $this->cart->addItem($this->item->getItem());
     }
@@ -27,26 +27,26 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
 
     public function testGCheckoutCheckout()
     {
-        $checkoutShoppingCart = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkoutShoppingCart = new Mercantile_Gateways_GCheckout_Checkout();
 
-        $this->assertType('Mercantile_Integrations_GCheckout_Checkout', $checkoutShoppingCart);
+        $this->assertType('Mercantile_Gateways_GCheckout_Checkout', $checkoutShoppingCart);
 
         $cart = $checkoutShoppingCart;
 
-        $this->assertType('Mercantile_Integrations_GCheckout_Checkout', $cart);
+        $this->assertType('Mercantile_Gateways_GCheckout_Checkout', $cart);
         $this->assertType('string', (string)$cart);
     }
 
     public function testGCheckoutCheckout_setShoppingCart()
     {
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
         $this->assertTrue($checkout->setShoppingCart($this->cart->getShoppingCart()));
     }
 
     public function testGCheckoutCheckout_setShoppingCartWrongTag()
     {
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
         try {
             $checkout->setShoppingCart(new DOMElement('not-a-cart'));
@@ -59,9 +59,9 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
     
     public function testGCheckoutCheckout_setShoppingCartDuplicateFail()
     {
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
         $this->assertTrue($checkout->setShoppingCart($this->cart->getShoppingCart()));
     }
@@ -74,7 +74,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
             'request-buyer-phone-number' => true,
             );
 
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout($options);
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout($options);
 
         $this->markTestSkipped();
     }
@@ -84,9 +84,9 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testGCheckoutCheckout_setShippingMethod()
     {
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
-        $shipMethod = new Mercantile_Integrations_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
+        $shipMethod = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
 
         $areas = array(
             'excluded-area' => array(

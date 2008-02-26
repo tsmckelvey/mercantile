@@ -5,7 +5,7 @@
  * @package Mercantile_Gateways
  * @subpackage AuthNetAim
  */
-class Mercantile_Gateways_AuthNetAim implements Mercantile_Gateway_Interface
+class Mercantile_Gateways_AuthNetAim
 {
     const API_VERSION      = 3.1;
     const API_LIVE_ENDPOINT    = 'https://secure.authorize.net/gateway/transact.dll';

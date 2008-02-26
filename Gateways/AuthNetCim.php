@@ -102,6 +102,16 @@ class Mercantile_Gateways_AuthNetCim
                                                                ->textContent;
                 }
                 break;
+            case 'getCustomerProfileResponse':
+                if ($success == true) {
+                    $profile = $responseDoc->getElementsByTagName('profile')
+                                           ->item(0);
+
+                    $profileDoc = new DOMDocument();
+
+                    $params['customerProfile'] = $profileDoc->saveXML($profileDoc->importNode($profile, $deep = true));
+                }
+                break;
             default:
                 break;
         }

@@ -4,10 +4,10 @@
  * shopping-cart DOM node.  Wrapper class for DOMDocument
  * implementation of Google's shopping-cart API element.
  *
- * @package Mercantile_Integrations
+ * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-class Mercantile_Integrations_GCheckout_ShoppingCart
+class Mercantile_Gateways_GCheckout_ShoppingCart
 {
     /**
      * The DOMDocument container of shopping-cart,

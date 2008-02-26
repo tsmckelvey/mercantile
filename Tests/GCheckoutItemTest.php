@@ -18,13 +18,13 @@ class GCheckoutItemTest extends PHPUnit_Framework_TestCase
     }
     public function testGCheckoutItem()
     {
-        $item = new Mercantile_Integrations_GCheckout_Item($this->itemInfo);
+        $item = new Mercantile_Gateways_GCheckout_Item($this->itemInfo);
 
-        $this->assertType('Mercantile_Integrations_GCheckout_Item', $item);
+        $this->assertType('Mercantile_Gateways_GCheckout_Item', $item);
     }
     public function testGCheckoutItem_getItem()
     {
-        $item = new Mercantile_Integrations_GCheckout_Item($this->itemInfo);
+        $item = new Mercantile_Gateways_GCheckout_Item($this->itemInfo);
 
         $newItem = $item->getItem();
 

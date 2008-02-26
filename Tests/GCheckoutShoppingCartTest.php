@@ -13,7 +13,7 @@ class GCheckoutShoppingCartTest extends PHPUnit_Framework_TestCase
             'quantity' => 1
             );
 
-        $this->item = new Mercantile_Integrations_GCheckout_Item($itemInfo);
+        $this->item = new Mercantile_Gateways_GCheckout_Item($itemInfo);
     }
     public function tearDown()
     {
@@ -21,15 +21,15 @@ class GCheckoutShoppingCartTest extends PHPUnit_Framework_TestCase
     }
     public function testGCheckoutCart()
     {
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $this->assertType('Mercantile_Integrations_GCheckout_ShoppingCart', $cart);
+        $this->assertType('Mercantile_Gateways_GCheckout_ShoppingCart', $cart);
 
         $this->assertType('string', (string)$cart);
     }
     public function testGCheckoutShoppingCart_addItem()
     {
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
         $shoppingCart = $cart->getShoppingCart();
 
@@ -39,7 +39,7 @@ class GCheckoutShoppingCartTest extends PHPUnit_Framework_TestCase
     }
     public function testGCheckoutShoppingCart_addItemWrongTag()
     {
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
         try {
             $cart->addItem(new DOMElement('not-an-item'));

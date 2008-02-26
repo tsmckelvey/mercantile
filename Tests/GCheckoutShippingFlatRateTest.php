@@ -11,7 +11,7 @@ class GCheckoutShippingFlatRateTest extends PHPUnit_Framework_TestCase
     }
     public function testFlatRate()
     {
-        $flatRate = new Mercantile_Integrations_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
+        $flatRate = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
 
         $areas = array(
             'excluded-area' => array(

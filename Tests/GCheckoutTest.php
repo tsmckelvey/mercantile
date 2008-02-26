@@ -13,9 +13,9 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'merchant_key'=> $this->key
             );
 
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $item = new Mercantile_Integrations_GCheckout_Item(array(
+        $item = new Mercantile_Gateways_GCheckout_Item(array(
             'name' => 'iPod',
             'description' => 'Passion of the Jobs',
             'price' => 149.99,
@@ -41,65 +41,65 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'merchant_key'=> $this->key
             );
 
-        $checkout = new Mercantile_Integrations_GCheckout($credentials);
+        $checkout = new Mercantile_Gateways_GCheckout($credentials);
 
-        $this->assertType('Mercantile_Integrations_GCheckout', $checkout);
+        $this->assertType('Mercantile_Gateways_GCheckout', $checkout);
     }
     public function testGCheckout_invalidCredentialsAndFails()
     {
         $credentials = array();
 
         try {
-            $checkout = new Mercantile_Integrations_GCheckout($credentials);
+            $checkout = new Mercantile_Gateways_GCheckout($credentials);
         } catch (Mercantile_Exception $e) {
             return;
         }
 
         $this->fail('Exception was not raised');
     }
-    public function testGCheckout_validCredentialsAndTestCredentials()
+    public function testTestCredentials_validCredentialsAndTestCredentials()
     {
         $credentials = array(
             'merchant_id' => $this->id,
             'merchant_key' => $this->key
             );
 
-        $response = Mercantile_Integrations_GCheckout::testCredentials($credentials);
+        $response = Mercantile_Gateways_GCheckout::testCredentials($credentials);
 
-        $this->assertType('Mercantile_Gateway_Response', $response);
+        $this->assertType('Mercantile_Gateways_GCheckout_Response', $response);
         $this->assertTrue($response->isSuccess());
 
         $params = $response->getParams();
 
         $this->assertType('string', $params['serial-number']);
     }
-    public function testGCheckout_generateCheckoutButton()
+    public function testGenerateCheckoutButton_validParamsAndSucceeds()
     {
         $params =  array('merchant_id' => $this->id);
 
-        $buttonUrl = Mercantile_Integrations_GCheckout::generateCheckoutButton($params);
+        $buttonUrl = Mercantile_Gateways_GCheckout::generateCheckoutButton($params);
 
         $this->assertType('string', $buttonUrl);
     }
-    public function testGCheckout_invalidMerchantIdGenerateCheckoutButton()
+    public function testGenerateCheckoutButton_merchantIdInvalidAndFails()
     {
         $params = array();
 
         try {
-            $buttonUrl = Mercantile_Integrations_GCheckout::generateCheckoutButton($params);
+            $buttonUrl = Mercantile_Gateways_GCheckout::generateCheckoutButton($params);
         } catch (Mercantile_Exception $e) {
             return;
         }
 
         $this->fail('Exception was not raised');
     }
-    public function testGCheckout_sendCheckoutRequest()
+    public function testSendCheckoutRequest_setShoppingCartAndRequestSucceeds()
     {
-        $gcheckout = new Mercantile_Integrations_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
 
-        $cart = new Mercantile_Integrations_GCheckout_ShoppingCart();
+        $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $item = new Mercantile_Integrations_GCheckout_Item(array(
+        $item = new Mercantile_Gateways_GCheckout_Item(array(
             'name' => 'iPod',
             'description' => 'Passion of the Jobs',
             'price' => 149.99,
@@ -108,7 +108,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
 
         $cart->addItem($item->getItem());
 
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
         $checkout->setShoppingCart($cart->getShoppingCart());
 
@@ -118,11 +118,11 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
 
         $this->assertType('string', $response->getParam('redirect-url'));
     }
-    public function testGCheckout_sendCheckoutRequestEmptyCheckoutFlowSupport()
+    public function testSendCheckoutRequest_setShoppingCartNoCheckoutFlowSupportAndSucceeds()
     {
-        $gcheckout = new Mercantile_Integrations_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
 
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout();
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
         $checkout->setShoppingCart($this->loadedCart);
 
@@ -130,17 +130,17 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($response->isSuccess());
     }
-    public function testGCheckout_sendRequestWithFlowSupportAndShippingParams()
+    public function testSetShoppingCart_sendRequestWithFlowSupportAndShippingParams()
     {
-        $gcheckout = new Mercantile_Integrations_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
 
         $options = array('edit-cart-url' => 'http://www.something.com');
             
-        $checkout = new Mercantile_Integrations_GCheckout_Checkout($options);
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout($options);
 
         $checkout->setShoppingCart($this->loadedCart);
 
-        $shipMethod = new Mercantile_Integrations_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
+        $shipMethod = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
 
         $areas = array(
             'allowed-area' => array(
@@ -155,11 +155,6 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
 
         $checkout->setShippingMethod($shipMethod);
 
-        echo $checkout;
-
         $response = $gcheckout->sendCheckoutRequest($checkout);
-
-        print_r($response->getParams());
-        print_r($response->getMessages());
     }
 }

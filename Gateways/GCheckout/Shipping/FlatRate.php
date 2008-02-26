@@ -1,5 +1,5 @@
 <?php
-class Mercantile_Integrations_GCheckout_Shipping_FlatRate extends Mercantile_Integrations_GCheckout_Shipping
+class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateways_GCheckout_Shipping
 {
     const FLAT_RATE_SHIPPING = 'flat-rate-shipping';
 

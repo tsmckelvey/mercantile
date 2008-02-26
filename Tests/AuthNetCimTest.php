@@ -110,4 +110,14 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($response->isSuccess());
     }
+    public function testGetCustomerProfile_invalidProfileId()
+    {
+        $response = $this->gateway->getCustomerProfile('invalidCustomerProfileId');
+
+        $this->assertFalse($response->isSuccess());
+
+        $response = $this->gateway->getCustomerProfile(888192931);
+
+        $this->assertFalse($response->isSuccess());
+    }
 }
