@@ -6,7 +6,7 @@
  * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-class Mercantile_Gateways_GCheckout_Checkout
+class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
 {
     // Google Checkout API Schema
     const CHECKOUT_XML_SCHEMA    = 'http://checkout.google.com/schema/2';
@@ -23,16 +23,23 @@ class Mercantile_Gateways_GCheckout_Checkout
     // Flow support container element (redundant?)
     const MERCHANT_CHECKOUT_FLOW_SUPPORT  = 'merchant-checkout-flow-support';
 
-    /**
-     * The checkout DOMDocument we operate on
-     */
-    private $_checkoutDocument = null;
+    // Shipping methods container element
+    const SHIPPING_METHODS = 'shipping-methods';
 
-    /**
-     * The root node of the document, 'checkout-shopping-cart' within which
-     * every element is held
-     */
-    private $_checkoutShoppingCart = null;
+    // option 
+    const EDIT_CART_URL              = 'edit-cart-url';
+
+    // option 
+    const CONTINUE_SHOPPING_URL      = 'continue-shopping-url';
+
+    // option 
+    const REQUEST_BUYER_PHONE_NUMBER = 'request-buyer-phone-number';
+
+    // option
+    const PLATFORM_ID                = 'platform-id';
+
+    // option
+    const ANALYTICS_DATA             = 'analytics-data';
 
     /**
      * merchant-checkout-flow-support element
@@ -45,12 +52,12 @@ class Mercantile_Gateways_GCheckout_Checkout
      * These all go into merchant-checkout-flow-support anyways
      */
     private $_optionalParams = array(
-        'edit-cart-url' => false,
-        'continue-shopping-url' => false,
-        'request-buyer-phone-number' => false,
-        'platform-id' => false,
-        'analytics-data' => false
-        // , 'parameterized-urls'
+        self::EDIT_CART_URL => false,
+        self::CONTINUE_SHOPPING_URL => false,
+        self::REQUEST_BUYER_PHONE_NUMBER => false,
+        self::PLATFORM_ID => false,
+        self::ANALYTICS_DATA => false,
+        // @TODO:, 'parameterized-urls'
         );
     
     /**
@@ -60,15 +67,11 @@ class Mercantile_Gateways_GCheckout_Checkout
      */
     public function __construct(array $options = array())
     {
-        $this->_checkoutDocument = new DOMDocument('1.0', 'utf-8');        
+        parent::__construct('1.0', 'utf-8');
 
-        $this->_checkoutShoppingCart = $this->_checkoutDocument
-                                            ->createElement( self::CHECKOUT_SHOPPING_CART );
+        $this->appendChild(new DomElement(self::CHECKOUT_SHOPPING_CART));
 
-        $this->_checkoutDocument
-             ->appendChild($this->_checkoutShoppingCart);
-
-        $this->_checkoutShoppingCart->setAttribute('xmlns', self::CHECKOUT_XML_SCHEMA);
+        $this->documentElement->setAttribute('xmlns', self::CHECKOUT_XML_SCHEMA);
 
         foreach ($options as $option => $value) {
             if (array_key_exists($option, $this->_optionalParams) == true) {
@@ -83,20 +86,20 @@ class Mercantile_Gateways_GCheckout_Checkout
         }
     }
 
+    // @TODO: setOption
+    // @TODO: setOptions
+
     public function __toString()
     {
-        $this->_checkoutDocument->formatOutput = true;
-
-        return $this->_checkoutDocument->saveXML();
+        return $this->saveXML($this->documentElement);
     }
     
     protected function _setupCheckoutFlowSupport()
     {
         if ($this->_flowSupport == null) {
-            $checkoutFlow = $this->_checkoutShoppingCart
-                                 ->appendChild(new DOMElement( self::CHECKOUT_FLOW_SUPPORT ));
+            $checkoutFlow = $this->documentElement->appendChild(new DomElement(self::CHECKOUT_FLOW_SUPPORT));
 
-            $this->_flowSupport = $checkoutFlow->appendChild(new DOMElement( self::MERCHANT_CHECKOUT_FLOW_SUPPORT ));
+            $this->_flowSupport = $checkoutFlow->appendChild(new DomElement(self::MERCHANT_CHECKOUT_FLOW_SUPPORT));
         }
 
         return $this->_flowSupport;
@@ -114,13 +117,13 @@ class Mercantile_Gateways_GCheckout_Checkout
     {
         if (get_class($cart) == 'DOMElement') {
         } else if (get_class($cart) == 'Mercantile_Gateways_GCheckout_ShoppingCart') {
-            $cart = $cart->getShoppingCart();
+            $cart = $cart->documentElement;
         } else {
             throw new Mercantile_Exception('Cart wrong type, is ' . get_class($cart));
         }
 
-        // import into document, required by spec
-        $cartElement = $this->_checkoutDocument->importNode($cart, $deep = true);
+        // import into document 
+        $cartElement = $this->importNode($cart, $deep = true);
 
         if ($cartElement->tagName == self::SHOPPING_CART) {
             // number of items
@@ -131,12 +134,12 @@ class Mercantile_Gateways_GCheckout_Checkout
                 throw new Mercantile_Exception('Shopping cart must have atleast one item, has ' . $itemCount);
 
             // check for existing shpping-cart ... there can only be one ...
-            if ($this->_checkoutShoppingCart->getElementsByTagName( self::SHOPPING_CART )->length > 0) {
-                $existingCart = $this->_checkoutShoppingCart->getElementsByTagName( self::SHOPPING_CART )->item(0);
+            if ($this->documentElement->getElementsByTagName(self::SHOPPING_CART)->length > 0) {
+                $existingCart = $this->documentElement->getElementsByTagName(self::SHOPPING_CART)->item(0);
                 unset($existingCart);
             }
 
-            $this->_checkoutShoppingCart->appendChild($cartElement);
+            $this->documentElement->appendChild($cartElement);
 
             return true;
         } else {
@@ -149,11 +152,12 @@ class Mercantile_Gateways_GCheckout_Checkout
      */
     public function setShippingMethod(Mercantile_Gateways_GCheckout_Shipping $method = null)
     {
-        $method = $this->_checkoutDocument->importNode($method->getRoot(), $deep = true);
+        // @TODO: getRoot()? wtf is this?
+        $method = $this->importNode($method->getRoot(), $deep = true);
 
         // if method tag name == 
         $this->_setupCheckoutFlowSupport()
-             ->appendChild(new DOMElement('shipping-methods'))
+             ->appendChild(new DOMElement(self::SHIPPING_METHODS))
              ->appendChild($method);
 
         return true;
