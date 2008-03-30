@@ -3,11 +3,58 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
 {
     const FLAT_RATE_SHIPPING = 'flat-rate-shipping';
 
-    private $_rootElement = null;
+    const PRICE = 'price';
+
+    const CURRENCY = 'currency';
+
+    const SHIPPING_RESTRICTIONS = 'shipping-restrictions';
+
+    // option
+    const US_STATE_AREA = 'us-state-area';
+
+    // option
+    const US_ZIP_AREA = 'us-zip-area';
+
+    // option
+    const US_COUNTRY_AREA = 'us-country-area';
+
+    // option
+    const STATE = 'state';
+
+    // option 
+    const ZIP = 'zip';
+
+    // option
+    const ZIP_PATTERN = 'zip-pattern';
+
+    // option
+    const COUNTRY_AREA = 'country-area';
+
+    // option
+    const COUNTRY_CODE = 'country-code';
+
+    // option
+    const POSTAL = 'code';
+
+    // option
+    const POSTAL_AREA = 'postal-area';
+
+    // option
+    const POSTAL_CODE_PATTERN = 'postal-code-pattern';
+
+    // option
+    const WORLD = 'world';
+
+    // option
+    const WORLD_AREA = 'world-area';
+
+    const ALLOWED_AREAS = 'allowed-areas';
+
+    const EXCLUDED_AREAS = 'excluded-areas';
 
     private $_restrictions = array(
-        'allowed-areas',
-        'excluded-areas'
+        self::ALLOWED_AREAS,
+        self::EXCLUDED_AREAS,
         );
 
     // @TODO: add validation
@@ -22,37 +69,28 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
 
         parent::__construct();
 
-        $this->_rootElement = $this->appendChild(new DOMElement( self::FLAT_RATE_SHIPPING ));
+        $this->formatOutput = true;
 
-        $this->_rootElement->setAttribute('name', $name);
+        $this->appendChild(new DomElement(self::FLAT_RATE_SHIPPING));
 
-        $this->getElementsByTagName( self::FLAT_RATE_SHIPPING )->item(0)
-             ->appendChild(new DOMElement('price', $price))->setAttribute('currency', 'USD');
+        $this->documentElement->setAttribute('name', $name);
+
+        // @TODO: currency USD, does it BELONG HERE? to be continued ...
+        $this->documentElement->appendChild(new DomElement(self::PRICE, $price))
+                              ->setAttribute(self::CURRENCY, 'USD');
     }
 
     public function __toString()
     {
-        $this->formatOutput = true;
-
-        return $this->saveXML();
-    }
-
-    public function getRoot()
-    {
-        return $this->_rootElement;
-    }
-
-    public function saveXML()
-    {
-        return parent::saveXML($this->_rootElement);
+        return $this->saveXML($this->documentElement);
     }
 
     protected function _setupShippingRestrictions()
     {
-        if ($this->getElementsByTagName('shipping-restrictions')->length < 1)
-            $this->firstChild->appendChild(new DOMElement('shipping-restrictions'));
+        if ($this->getElementsByTagName(self::SHIPPING_RESTRICTIONS)->length < 1)
+            $this->firstChild->appendChild(new DomElement(self::SHIPPING_RESTRICTIONS));
 
-        return $this->getElementsByTagName('shipping-restrictions')->item(0);
+        return $this->getElementsByTagName(self::SHIPPING_RESTRICTIONS)->item(0);
     }
     
     /**
@@ -68,10 +106,11 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
         foreach ($areas as $key => $areaData) {
             $rule = substr($key, 0, 3);
                 
+            // @TODO: change to constants or something
             if ($rule == 'exc') {
-                $rule = 'excluded-areas';
+                $rule = self::EXCLUDED_AREAS;
             } elseif ($rule == 'all') {
-                $rule = 'allowed-areas';
+                $rule = self::ALLOWED_AREAS;
             } else {
                 throw new Mercantile_Exception('Unavailable area ' . $rule);
             }
@@ -91,68 +130,69 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
 
         foreach ($areas[$key] as $key => $value) {
             switch ($key) {
-                case 'state':
+                case self::STATE:
                     // @TODO: duplicates???
-                    $stateRules = $restriction->getElementsByTagName('us-state-area');
+                    $stateRules = $restriction->getElementsByTagName(self::US_STATE_AREA);
 
                     if ($stateRules->length < 1) {
-                        $restriction->appendChild(new DOMElement('us-state-area'))
-                                    ->appendChild(new DOMElement('state', $value));
+                        $restriction->appendChild(new DomElement(self::US_STATE_AREA))
+                                    ->appendChild(new DomElement(self::STATE, $value));
                     } else {
-                        $stateRules->item(0)->appendChild(new DOMElement('state', $value));
+                        $stateRules->item(0)->appendChild(new DomElement(self::STATE, $value));
                     }
                 break;
-                case 'zip':
+                case self::ZIP:
                     // @TODO: duplicates???
-                    $zipRules = $restriction->getElementsByTagName('us-zip-area');
+                    $zipRules = $restriction->getElementsByTagName(self::US_ZIP_AREA);
 
                     if ($zipRules->length < 1) {
-                        $restriction->appendChild(new DOMElement('us-zip-area'))
-                                    ->appendChild(new DOMElement('zip-pattern', $value));
+                        $restriction->appendChild(new DomElement(self::US_ZIP_AREA))
+                                    ->appendChild(new DomElement(self::ZIP_PATTERN));
                     } else {
-                        $zipRules->item(0)->appendChild(new DOMElement('zip-pattern', $value));
+                        $zipRules->item(0)->appendChild(new DomElement(self::ZIP_PATTERN, $value));
                     }
                 break;
-                case 'country-area':
-                    $countryRules = $restriction->getElementsByTagName('us-country-area');
+                case self::COUNTRY_AREA:
+                    $countryRules = $restriction->getElementsByTagName(self::US_COUNTRY_AREA);
 
                     if (in_array($value, parent::$_countryAreas)) {
                         if ($countryRules->length < 1) {
-                            $restriction->appendChild(new DOMElement('us-country-area'))->setAttribute('country-area', $value);
+                            $restriction->appendChild(new DomElement(self::US_COUNTRY_AREA))
+                                        ->setAttribute(self::COUNTRY_AREA, $value);
                         } else {
-                            $countryRules->item(0)->setAttribute('country-area', $value);
+                            $countryRules->item(0)->setAttribute(self::COUNTRY_AREA, $value);
                         }
                     }
                 break;
-                case 'country-code':
+                case self::COUNTRY_CODE:
                     // @TODO: add ISO 3166 checking
                     // @TODO: duplicates???
-                    $postalRules = $restriction->getElementsByTagName('postal-area');
+                    $postalRules = $restriction->getElementsByTagName(self::POSTAL_AREA);
 
                     if ($postalRules->length < 1) {
-                        $restriction->appendChild(new DOMElement('postal-area'))
-                                    ->appendChild(new DOMElement('country-code', $value));
+                        $restriction->appendChild(new DomElement(self::POSTAL_AREA))
+                                    ->appendChild(new DomElement(self::COUNTRY_CODE, $value));
                     } else {
-                        $postalRules->item(0)->appendChild(new DOMElement('country-code', $value));
+                        $postalRules->item(0)->appendChild(new DomElement(self::COUNTRY_CODe, $value));
                     }
                 break;
-                case 'postal':
+                case self::POSTAL:
                     // @TODO: duplicates???
-                    $postalRules = $restriction->getElementsByTagName('postal-area');
+                    $postalRules = $restriction->getElementsByTagName(self::POSTAL_AREA);
 
                     if ($postalRules->length < 1) {
-                        $restriction->appendChild(new DOMElement('postal-area'))
-                                    ->appendChild(new DOMElement('postal-code-pattern', $value));
+                        $restriction->appendChild(new DomElement(self::POSTAL_AREA))
+                                    ->appendChild(new DomElement(self::POSTAL_CODE_PATTERN, $value));
                     } else {
-                        $postalRules->item(0)->appendChild(new DOMElement('postal-code-pattern', $value));
+                        $postalRules->item(0)->appendChild(new DomElement(self::POSTAL_CODE_PATTERN, $value));
                     }
                 break;
-                case 'world':
-                    if ($rule == 'allowed-areas') {
-                        $worldRule = $restriction->getElementsByTagName('world-area');
+                case self::WORLD:
+                    if ($rule == self::ALLOWED_AREAS) {
+                        $worldRule = $restriction->getElementsByTagName(self::WORLD_AREA);
 
                         if ($worldRule->length < 1)
-                            $restriction->appendChild(new DOMElement('world-area'));
+                            $restriction->appendChild(new DOMElement(self::WORLD_AREA));
                     }
                 break;
             }
