@@ -3,22 +3,6 @@ require 'Bootstrap.php';
 
 class AuthNetCimTest extends PHPUnit_Framework_TestCase
 {
-    protected function _randStr()
-    {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-        $i = 0;
-        $str = '';
-
-        while ($i <= 19) {
-            $num = rand(1, strlen($chars));
-            $tmp = substr($chars, $num, 1);
-            $str .= $tmp;
-            $i++;
-        }
-
-        return $str;
-    }
     public function setup() 
     {
         $credentials = array(
@@ -55,9 +39,52 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateCustomerProfile()
     {
-        $options = array('description' => (string)$this->_randStr());
+        $options = array('description' => (string)randStr());
 
         $cusProfile = new Mercantile_Gateways_AuthNetCim_CustomerProfile($options);
+
+        $response = $this->gateway->createCustomerProfile($cusProfile);
+
+        $this->customerProfileId = $response->getCustomerProfileId();
+
+        $this->assertTrue($response->isSuccess());
+    }
+    /**
+     * Create a customer profile with multiple payment profiles (creditCard)
+     */
+    public function testCreateCustomerProfile_multiplePaymentProfilesAndSucceeds()
+    {
+        $ccOptions = array('type' => 'visa',
+                           'number' => '3234567890123',
+                           'month' => 09,
+                           'year' => 2009,
+                           'card_code' => 388,
+                           'first_name' => 'tom',
+                           'last_name' => 'yevlekcm');
+
+        $payProfile = new Mercantile_Gateways_AuthNetCim_PaymentProfile();
+
+        $payProfile->setPayment(new Mercantile_Billing_CreditCard($ccOptions));
+
+        $options = array('description' => (string)randStr());
+        
+        $cusProfile = new Mercantile_Gateways_AuthNetCim_CustomerProfile($options);  
+
+        $cusProfile->addPaymentProfile($payProfile);
+
+        $ccOptions = array('type' => 'visa',
+                           'number' => '1234567890123',
+                           'month' => 09,
+                           'year' => 2009,
+                           'card_code' => 388,
+                           'first_name' => 'tom',
+                           'last_name' => 'yevlekcm');
+
+        $payProfile = new Mercantile_Gateways_AuthNetCim_PaymentProfile();
+
+        $payProfile->setPayment(new Mercantile_Billing_CreditCard($ccOptions));
+
+        $cusProfile->addPaymentProfile($payProfile);
 
         $response = $this->gateway->createCustomerProfile($cusProfile);
 
@@ -70,8 +97,8 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateCustomerProfile_duplicateIdAndFails()
     {
-        $options = array('description' => (string)$this->_randStr(),
-                         'merchantCustomerId' => (string)$this->_randStr()
+        $options = array('description' => (string)randStr(),
+                         'merchantCustomerId' => (string)randStr()
                         );
 
         $cusProfile = new Mercantile_Gateways_AuthNetCim_CustomerProfile($options);
@@ -89,7 +116,7 @@ class AuthNetCimTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteCustomerProfile_createsAndDeletesCustomerProfile()
     {
-        $options = array('description' => (string)$this->_randStr());
+        $options = array('description' => (string)randStr());
 
         $cusProfile = new Mercantile_Gateways_AuthNetCim_CustomerProfile($options);
 

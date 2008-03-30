@@ -47,11 +47,32 @@ class AuthNetCimCustomerProfileTest extends PHPUnit_Framework_TestCase
         $payProfile = new Mercantile_Gateways_AuthNetCim_PaymentProfile();
 
         $this->cusProfile->addPaymentProfile($payProfile);
-
-        echo $this->cusProfile;
     }
     public function testAddPaymentProfile_invalidProfileAndThrowsException()
     {
         
+    }
+    public function testAddPaymentProfile_duplicateProfileAndFails()
+    {
+        $ccOptions = array('type' => 'visa',
+                           'number' => '3234567890123',
+                           'month' => 09,
+                           'year' => 2009,
+                           'card_code' => 388,
+                           'first_name' => 'tom',
+                           'last_name' => 'yevlekcm');
+
+        $payProfile = new Mercantile_Gateways_AuthNetCim_PaymentProfile();
+
+        $payProfile->setPayment(new Mercantile_Billing_CreditCard($ccOptions));
+        
+        $options = array('description' => (string)randStr());
+
+        $cusProfile = new Mercantile_Gateways_AuthNetCim_CustomerProfile($options);  
+
+        $this->assertTrue($cusProfile->addPaymentProfile($payProfile));
+
+        // this should return false
+        $this->assertFalse($cusProfile->addPaymentProfile($payProfile));
     }
 }

@@ -78,10 +78,12 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
 
         $this->markTestSkipped();
     }
+
     public function testGCheckoutCheckout_optionalParamsInvalid()
     {
         $this->markTestSkipped();
     }
+
     public function testGCheckoutCheckout_setShippingMethod()
     {
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();

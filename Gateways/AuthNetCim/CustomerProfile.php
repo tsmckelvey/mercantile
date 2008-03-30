@@ -21,6 +21,8 @@ class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DOMDocument
     {
         parent::__construct();
 
+        $this->formatOutput = true;
+
         $this->appendChild(new DOMElement('profile'));
 
         if (gettype($options) !== 'array')
@@ -47,15 +49,36 @@ class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DOMDocument
 
     public function __toString()
     {
-        $this->formatOutput = true;
-
         return $this->saveXML();
     }
 
+    /**
+     * Add a payment profile to this customer profile
+     *
+     * Duplicate payment profiles will silently fail 
+     *
+     * Cardinality 0..*
+     *
+     * @param Mercantle_Gateways_AuthNetCim_PaymentProfile $payProfile A payment profile object
+     */
     public function addPaymentProfile(Mercantile_Gateways_AuthNetCim_PaymentProfile $payProfile = null)
     {
+        // @TODO: add validation code
+        // @TODO: add interface for paymentProfiles
+
+        // check for duplicates, else anet returns an ambiguous error message
+        foreach ($this->_paymentProfiles as $profile) {
+            if ($this->saveXML($profile) == (string)$payProfile) {
+                return false;
+            }
+        }
+
         $payProfile = $this->importNode($payProfile->documentElement, $deep = true);
 
         $this->_paymentProfiles[] = $this->documentElement->appendChild($payProfile);
+
+        $this->documentElement->appendChild($payProfile);
+
+        return true;
     }
 }

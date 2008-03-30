@@ -37,7 +37,8 @@ class Mercantile_Billing_CreditCard
             throw new Mercantile_Exception('CC type invalid, is ' . gettype($ccInfo['type']));
         }
 
-        if (isset($ccInfo['number']) && is_string($ccInfo['number'])) {
+        // number is set, is string, and is only numbers
+        if (isset($ccInfo['number']) && is_string($ccInfo['number']) && preg_match('/[0-9]+/', $ccInfo['number'])) {
             $this->_number = $ccInfo['number'];
         } else {
             throw new Mercantile_Exception('CC number invalid, is ' . gettype($ccInfo['number']));
@@ -76,6 +77,32 @@ class Mercantile_Billing_CreditCard
         }
     }
 
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'type':
+                return $this->_type;
+                break;
+            case 'number':
+                return $this->_number;
+                break;
+            case 'expDate':
+                return $this->_exp_date;
+                break;
+            case 'cardCode':
+                return $this->_card_code;
+                break;
+            case 'firstName':
+                return $this->_first_name;
+                break;
+            case 'lastName':
+                return $this->_last_name;
+                break;
+            default:
+                break;
+        }
+    }
+
     public function getType()
     {
         return $this->_type;
@@ -100,14 +127,18 @@ class Mercantile_Billing_CreditCard
     {
         return $this->_last_name;
     }
+
     /**
      * Find out if the CC passes Luhn algo
+     * @TODO: deprecate Zend usage, replace w homegrown
      */
-    public function isValid()
+    public function isValid($ccNum = null)
     {
         $validator = new Zend_Validate_Ccnum();
 
-        if ($validator->isValid($this->getNumber()) == true) {
+        if ($ccNum == null) $ccNum = $this->getNumber();
+
+        if ($validator->isValid($ccNum) == true) {
             return true;
         } else {
             return false;

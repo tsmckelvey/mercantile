@@ -1,8 +1,7 @@
 <?php
-
 /**
- * GCheckout_Checkout assembles and posts all <checkout-shopping-cart>
- * requests.  A checkout request requires a shopping-cart item at the least.
+ * GCheckout_Checkout assembles all <checkout-shopping-cart> requests.  
+ * A checkout request requires a shopping-cart item at the least.
  *
  * @package Mercantile_Gateways
  * @subpackage GCheckout
@@ -77,7 +76,7 @@ class Mercantile_Gateways_GCheckout_Checkout
 
                 $this->_setupCheckoutFlowSupport();
 
-                // need to add validation
+                // @TODO: need to add validation
                 // edit-cart-url and continue-shopping-url must URL validate
                 $this->_flowSupport->appendChild(new DOMElement($option, $value));
             }
@@ -102,6 +101,7 @@ class Mercantile_Gateways_GCheckout_Checkout
 
         return $this->_flowSupport;
     }
+
     /**
      * Add a DOMElement cart
      *
@@ -113,7 +113,7 @@ class Mercantile_Gateways_GCheckout_Checkout
     public function setShoppingCart($cart = null)
     {
         if (get_class($cart) == 'DOMElement') {
-        } elseif (get_class($cart) == 'Mercantile_Gateways_GCheckout_ShoppingCart') {
+        } else if (get_class($cart) == 'Mercantile_Gateways_GCheckout_ShoppingCart') {
             $cart = $cart->getShoppingCart();
         } else {
             throw new Mercantile_Exception('Cart wrong type, is ' . get_class($cart));

@@ -49,5 +49,7 @@ class CreditCardTest extends PHPUnit_Framework_TestCase
 
         $this->assertType('Mercantile_Billing_CreditCard', $cc);
         $this->assertFalse($cc->isValid());
+
+        $this->assertFalse($cc->isValid(8000000000000));
     }
 }

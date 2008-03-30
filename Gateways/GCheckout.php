@@ -100,7 +100,7 @@ class Mercantile_Gateways_GCheckout
                 break;
 
             /**
-             * Universal erro
+             * Universal error
              */
            case 'error':
                 $success = false;
@@ -192,7 +192,8 @@ class Mercantile_Gateways_GCheckout
     {
         if (get_class($checkout) == 'DOMElement') {
             $checkout = $checkout->saveXML();
-        } elseif (get_class($checkout) == 'Mercantile_Gateways_GCheckout_Checkout') {
+        } else if (get_class($checkout) == 'Mercantile_Gateways_GCheckout_Checkout') {
+            // type coerce GCheckout_Checkout w __toString()
             $checkout = (string)$checkout;
         } else {
             throw new Mercantile_Exception('Checkout shopping cart wrong type, is ' . get_class($checkout));
