@@ -22,7 +22,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'quantity' => 1
             ));
 
-        $cart->addItem($item->getItem());
+        $cart->addItem($item);
 
         $this->loadedCart = $cart;
     }
@@ -106,11 +106,11 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'quantity' => 1
             ));
 
-        $cart->addItem($item->getItem());
+        $cart->addItem($item);
 
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
-        $checkout->setShoppingCart($cart->getShoppingCart());
+        $checkout->setShoppingCart($cart);
 
         $response = $gcheckout->sendCheckoutRequest($checkout);
 
@@ -143,18 +143,82 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
         $shipMethod = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
 
         $areas = array(
-            'allowed-area' => array(
+            'allowed-areas' => array(
                 'state' => 'AK',
-                'zip' => 98006,
+                'zip-pattern' => 98006,
                 'country-area' => 'CONTINENTAL_48',
                 'country-code' => 'US'
                 )
             );
 
-        $shipMethod->addShippingRestriction($areas);
+        $shipMethod->setShippingRestrictions($areas);
 
-        $checkout->setShippingMethod($shipMethod);
+        $checkout->addShippingMethod($shipMethod);
 
         $response = $gcheckout->sendCheckoutRequest($checkout);
+
+        $this->assertTrue($response->isSuccess());
+    }
+    public function testSendCheckoutRequest_sendRequestWithMultipleFlatRateShippingMethods()
+    {
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
+
+        $checkout->setShoppingCart($this->loadedCart);
+
+        $shipping = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next-Day Air', 20);
+
+        $checkout->addShippingMethod($shipping);
+
+        $shipping = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next-Year Air', 1);
+
+        $checkout->addShippingMethod($shipping);
+
+        $response = $gateway->sendCheckoutRequest($checkout);
+
+        $this->assertTrue($response->isSuccess());
+    }
+    public function testSendCheckoutRequest_sendRequestWithNonDefaultRoundingPolicy()
+    {
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
+
+        $checkout->setShoppingCart($this->loadedCart);
+
+        $checkout->setRoundingPolicy(Mercantile_Gateways_GCheckout_Checkout::PER_LINE,
+                                     Mercantile_Gateways_GCheckout_Checkout::HALF_DOWN);
+
+        $response = $gateway->sendCheckoutRequest($checkout);
+
+        $this->assertTrue($response->isSuccess());
+    }
+    public function testSendCheckoutRequest_sendRequestWithExcludedAreas()
+    {
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
+
+        $checkout->setShoppingCart($this->loadedCart);
+
+        $shippingMethod = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next-Day Air', 20);
+
+        $restrictions = array(
+            'allowed-areas' => array(
+                'world' => true
+                ),
+            'excluded-areas' => array(
+                'state' => 'WA',
+                )
+            );
+
+        $shippingMethod->setShippingRestrictions($restrictions);
+
+        $checkout->addShippingMethod($shippingMethod);
+
+        $response = $gateway->sendCheckoutRequest($checkout);
+
+        $this->assertTrue($response->isSuccess());
     }
 }

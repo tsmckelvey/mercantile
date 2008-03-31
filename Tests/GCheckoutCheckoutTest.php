@@ -16,7 +16,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
     
         $this->cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $this->cart->addItem($this->item->getItem());
+        $this->cart->addItem($this->item);
     }
 
     public function tearDown()
@@ -41,7 +41,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
     {
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
-        $this->assertTrue($checkout->setShoppingCart($this->cart->getShoppingCart()));
+        $this->assertTrue($checkout->setShoppingCart($this->cart));
     }
 
     public function testGCheckoutCheckout_setShoppingCartWrongTag()
@@ -63,7 +63,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
 
         $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $this->assertTrue($checkout->setShoppingCart($this->cart->getShoppingCart()));
+        $this->assertTrue($checkout->setShoppingCart($this->cart));
     }
     
     public function testGCheckoutCheckout_optionalParams()
@@ -91,7 +91,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
         $shipMethod = new Mercantile_Gateways_GCheckout_Shipping_FlatRate('UPS Next Day Air', 20);
 
         $areas = array(
-            'excluded-area' => array(
+            'excluded-areas' => array(
                 'state' => 'AK',
                 'zip' => 98006,
                 'country-area' => 'CONTINENTAL_48',
@@ -101,11 +101,10 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-        $shipMethod->addShippingRestriction($areas);
+        $shipMethod->setShippingRestrictions($areas);
 
         $checkout->setShippingMethod($shipMethod);
 
-        echo $checkout;
         $this->assertTrue($checkout->setShippingMethod($shipMethod));
     }
 }

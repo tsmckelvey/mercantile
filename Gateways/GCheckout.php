@@ -9,14 +9,88 @@
 class Mercantile_Gateways_GCheckout
 {
     const API_SANDBOX_ENDPOINT = 'https://sandbox.google.com/checkout/api/checkout/v2/request/Merchant/';
+
     const API_LIVE_ENDPOINT    = 'https://checkout.google.com/api/checkout/v2/request/Merchant/';
 
     const API_XML_SCHEMA = 'http://checkout.google.com/schema/2';
 
     const API_BUTTON_SANDBOX = 'http://sandbox.google.com/checkout/buttons/checkout.gif';
+
     const API_BUTTON_LIVE    = 'http://checkout.google.com/buttons/checkout.gif';
-    
+
+    const MERCHANT_ID = 'merchant_id';
+
+    const MERCHANT_KEY = 'merchant_key';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_bye
+     */
+    const BYE = 'bye';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_checkout-redirect
+     */
+    const CHECKOUT_REDIRECT = 'checkout-redirect';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_request-received
+     */
+    const REQUEST_RECEIVED = 'request-received';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_diagnosis
+     */
+    const DIAGNOSIS = 'diagnosis';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_error
+     */
+    const ERROR = 'error';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_serial-number
+     */
+    const SERIAL_NUMBER = 'serial-number';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_redirect-url
+     */
+    const REDIRECT_URL = 'redirect-url';
+
+    // checkout button constants
+    const SIZE = 'size';
+
+    const LARGE = 'large';
+
+    const MEDIUM = 'medium';
+
+    const SMALL = 'small';
+
+    const STYLE = 'style';
+
+    const WHITE = 'white';
+
+    const TRANS = 'trans';
+
+    const VARIANT = 'variant';
+
+    const TEXT = 'text';
+
+    const DISABLED = 'disabled';
+
+    const LOC = 'loc';
+
+    const EN_US = 'en_US';
+
+    const EN_GB = 'en_GB';
+
+    const W = 'w';
+
+    const H = 'h';
+
     private $_credentials = array();
+
+    private $_lastRequest = null;
 
     /**
      * Construct GCheckout base object
@@ -28,16 +102,16 @@ class Mercantile_Gateways_GCheckout
      */
     public function __construct(array $credentials = null)
     {
-        if (!isset($credentials['merchant_id'])) {
-            throw new Mercantile_Exception('"merchant_id" not string, is ' . @gettype($credentials['merchant_id']));
+        if (!isset($credentials[self::MERCHANT_ID])) {
+            throw new Mercantile_Exception('"merchant_id" not string, is ' . @gettype($credentials[self::MERCHANT_ID]));
         } else {
-            $this->_credentials['merchant_id'] = $credentials['merchant_id'];
+            $this->_credentials[self::MERCHANT_ID] = $credentials[self::MERCHANT_ID];
         }
 
-        if (!isset($credentials['merchant_key'])) {
-            throw new Mercantile_Exception('"merchant_key" not string, is ' . @gettype($credentials['merchant_key']));
+        if (!isset($credentials[self::MERCHANT_KEY])) {
+            throw new Mercantile_Exception('"merchant_key" not string, is ' . @gettype($credentials[self::MERCHANT_KEY]));
         } else {
-            $this->_credentials['merchant_key'] = $credentials['merchant_key'];
+            $this->_credentials[self::MERCHANT_KEY] = $credentials[self::MERCHANT_KEY];
         }
     }
 
@@ -61,7 +135,7 @@ class Mercantile_Gateways_GCheckout
 
         $attr = $xml->attributes();
 
-        $params['serial-number'] = (string)$attr['serial-number'];
+        $params[self::SERIAL_NUMBER] = (string)$attr[self::SERIAL_NUMBER];
 
         foreach ($xml->children() as $message) {
             $messages[$message->getName()] = (string)$message;
@@ -71,23 +145,23 @@ class Mercantile_Gateways_GCheckout
             /**
              * Test merchant credentials
              */
-            case 'bye':
+            case self::BYE:
                 $success = true;
                 break;
 
             /**
              * Checkout API 
              */
-            case 'checkout-redirect':
-                $params['redirect-url'] = $messages['redirect-url'];
-                unset($messages['redirect-url']);
+            case self::CHECKOUT_REDIRECT:
+                $params[self::REDIRECT_URL] = $messages[self::REDIRECT_URL];
+                unset($messages[self::REDIRECT_URL]);
                 $success = true;
                 break;
 
             /**
              * Order Processing API
              */
-            case 'request-received':
+            case self::REQUEST_RECEIVED:
                 $success = true;
                 //$params = 
                 break;
@@ -95,19 +169,24 @@ class Mercantile_Gateways_GCheckout
             /**
              * Diagnostic 
              */
-            case 'diagnosis':
+            case self::DIAGNOSIS:
                 $success = true;
                 break;
 
             /**
              * Universal error
              */
-           case 'error':
+            case self::ERROR:
                 $success = false;
                 break;
         }
 
         return new Mercantile_Gateways_GCheckout_Response($success, $messages, $params);
+    }
+
+    public function getLastRequest()
+    {
+        return $this->_lastRequest;
     }
 
     /**
@@ -122,11 +201,11 @@ class Mercantile_Gateways_GCheckout
 
         $xmlObj = new SimpleXMLElement($xml);
 
-        $url = self::API_SANDBOX_ENDPOINT . $credentials['merchant_id'];
+        $url = self::API_SANDBOX_ENDPOINT . $credentials[self::MERCHANT_ID];
 
         $client = new Zend_Http_Client($url);
 
-        $client->setAuth($credentials['merchant_id'], $credentials['merchant_key'], Zend_Http_Client::AUTH_BASIC);
+        $client->setAuth($credentials[self::MERCHANT_ID], $credentials[self::MERCHANT_KEY], Zend_Http_Client::AUTH_BASIC);
 
         $client->setRawData($xmlObj->asXml());
 
@@ -146,30 +225,30 @@ class Mercantile_Gateways_GCheckout
      */
     static public function generateCheckoutButton(array $params = null, $sandbox = true)
     {
-        if (!isset($params['merchant_id']))
-            throw new Mercantile_Exception('"merchant_id" ' . @gettype($params['merchant_id']));
+        if (!isset($params[self::MERCHANT_ID]))
+            throw new Mercantile_Exception('"merchant_id" ' . @gettype($params[self::MERCHANT_ID]));
 
-        if (!isset($params['size']) or !in_array($params['size'], array('large', 'medium', 'small')))
-            $params['size'] = 'medium';
+        if (!isset($params[self::SIZE]) or !in_array($params[self::SIZE], array(self::LARGE, self::MEDIUM, self::SMALL)))
+            $params[self::SIZE] = self::MEDIUM;
 
         $imageSizes = array(
-            'large' => array(180, 46),
-            'medium'=> array(168, 44),
-            'small' => array(160, 43));
+            self::LARGE => array(180, 46),
+            self::MEDIUM => array(168, 44),
+            self::SMALL => array(160, 43));
 
-        $params['w'] = $imageSizes[$params['size']][0];
-        $params['h'] = $imageSizes[$params['size']][1];
+        $params[self::W] = $imageSizes[$params[self::SIZE]][0];
+        $params[self::H] = $imageSizes[$params[self::SIZE]][1];
 
-        unset($params['size']);
+        unset($params[self::SIZE]);
 
-        if (!isset($params['style']) or !in_array($params['style'], array('white', 'trans')))
-            $params['style'] = 'white';
+        if (!isset($params[self::STYLE]) or !in_array($params[self::STYLE], array(self::WHITE, self::TRANS)))
+            $params[self::STYLE] = self::WHITE;
 
-        if (!isset($params['variant']) or !in_array($params['variant'], array('text', 'disabled')))
-            $params['variant'] = 'text';
+        if (!isset($params[self::VARIANT]) or !in_array($params[self::VARIANT], array(self::TEXT, self::DISABLED)))
+            $params[self::VARIANT] = self::TEXT;
 
-        if (!isset($params['loc']) or !in_array($params['loc'], array('en_US', 'en_GB')))
-            $params['loc'] = 'en_US';
+        if (!isset($params[self::LOC]) or !in_array($params[self::LOC], array(self::EN_US, self::EN_GB)))
+            $params[self::LOC] = self::EN_US;
         
         $imageUrl = ($sandbox) ? self::API_BUTTON_SANDBOX : self::API_BUTTON_LIVE;
 
@@ -199,17 +278,20 @@ class Mercantile_Gateways_GCheckout
             throw new Mercantile_Exception('Checkout shopping cart wrong type, is ' . get_class($checkout));
         }
 
-        $url = self::API_SANDBOX_ENDPOINT . $this->_credentials['merchant_id'];
+        // @TODO: sandbox? production? what? FIX THIS
+        $url = self::API_SANDBOX_ENDPOINT . $this->_credentials[self::MERCHANT_ID];
 
         $client = new Zend_Http_Client($url);
 
-        $client->setAuth($this->_credentials['merchant_id'], 
-                         $this->_credentials['merchant_key'], 
+        $client->setAuth($this->_credentials[self::MERCHANT_ID], 
+                         $this->_credentials[self::MERCHANT_KEY], 
                          Zend_Http_Client::AUTH_BASIC);
 
         $client->setRawData($checkout);
 
         $client->request('POST');
+
+        $this->_lastRequest = $client->getLastRequest();
 
         $response = self::_parseResponse($client->getLastResponse()->getBody());
 

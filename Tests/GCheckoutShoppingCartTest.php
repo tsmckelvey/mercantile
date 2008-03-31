@@ -31,18 +31,16 @@ class GCheckoutShoppingCartTest extends PHPUnit_Framework_TestCase
     {
         $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
-        $shoppingCart = $cart->getShoppingCart();
+        $this->assertType('DomDocument', $cart);
 
-        $this->assertType('DOMElement', $shoppingCart);
-
-        $this->assertTrue( $cart->addItem($this->item->getItem()) );
+        $this->assertTrue($cart->addItem($this->item));
     }
     public function testGCheckoutShoppingCart_addItemWrongTag()
     {
         $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
         try {
-            $cart->addItem(new DOMElement('not-an-item'));
+            $cart->addItem(new DomElement('not-an-item'));
         } catch (Exception $e) {
             return;
         }

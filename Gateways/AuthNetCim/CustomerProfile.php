@@ -4,7 +4,7 @@
  * @package Mercantile_Gateways
  * @subpackage AuthNetCim
  */
-class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DOMDocument
+class Mercantile_Gateways_AuthNetCim_CustomerProfile extends DomDocument
 {
     private $_paymentProfiles = array();
 
