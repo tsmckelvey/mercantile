@@ -2,10 +2,16 @@
 class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateways_GCheckout_Shipping
 {
     // @TODO: add validation
-    public function __construct($name = null, $price = null)
+    /**
+     * Instantiate a flat rate method
+     *
+     * @param string $methodName The name of the flat-rate shipping method
+     * @price @todo
+     */
+    public function __construct($methodName = null, $price = null)
     {
-        if (!is_string($name))
-            throw new Mercantile_Exception('Name must be string, is ' . gettype($name));
+        if (!is_string($methodName))
+            throw new Mercantile_Exception('Name must be string, is ' . gettype($methodName));
 
         // @TODO: deprecate this with Mercantile_Money
         if (!is_int($price))
@@ -17,7 +23,7 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
 
         $this->appendChild(new DomElement(self::FLAT_RATE_SHIPPING));
 
-        $this->documentElement->setAttribute('name', $name);
+        $this->documentElement->setAttribute('name', $methodName);
 
         // @TODO: currency USD, does it BELONG HERE? to be continued ...
         $this->documentElement->appendChild(new DomElement(self::PRICE, $price))

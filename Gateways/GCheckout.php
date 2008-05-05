@@ -22,6 +22,20 @@ class Mercantile_Gateways_GCheckout
 
     const MERCHANT_KEY = 'merchant_key';
 
+    const XML_VERSION = '1.0';
+
+    const XML_ENCODING = 'utf-8';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_xmlns
+     */
+    const XMLNS = 'xmlns';
+
+    /**
+     * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_hello
+     */
+    const HELLO = 'hello';
+
     /**
      * http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_bye
      */
@@ -88,8 +102,19 @@ class Mercantile_Gateways_GCheckout
 
     const H = 'h';
 
+    /**
+     * The API endpoint to point to, variable between production and sandbox (see:setTestMode);
+     */
+    private $_apiEndpoint = null;
+
+    /**
+     * k/v pair of API credentials
+     */
     private $_credentials = array();
 
+    /**
+     * Raw body of last HTTP request
+     */
     private $_lastRequest = null;
 
     /**
@@ -113,6 +138,16 @@ class Mercantile_Gateways_GCheckout
         } else {
             $this->_credentials[self::MERCHANT_KEY] = $credentials[self::MERCHANT_KEY];
         }
+
+        $this->setTestMode(false);
+    }
+
+    /**
+     * Set GCheckout to Sandbox mode
+     */
+    public function setTestMode($testMode = true)
+    {
+        $this->_apiEndpoint = ($testMode) ? self::API_LIVE_ENDPOINT : self::API_SANDBOX_ENDPOINT;
     }
 
     /**
@@ -127,21 +162,21 @@ class Mercantile_Gateways_GCheckout
      */
     static protected function _parseResponse($rawXml = null)
     {
-        $xml = new SimpleXMLElement($rawXml);
+        $response = new DomDocument(self::XML_VERSION, self::XML_ENCODING);
+
+        $response->loadXML($rawXml);
 
         $messages = array();
 
         $params = array();
 
-        $attr = $xml->attributes();
+        $params[self::SERIAL_NUMBER] = $response->documentElement->getAttribute(self::SERIAL_NUMBER);
 
-        $params[self::SERIAL_NUMBER] = (string)$attr[self::SERIAL_NUMBER];
-
-        foreach ($xml->children() as $message) {
-            $messages[$message->getName()] = (string)$message;
+        foreach ($response->documentElement->childNodes as $messageNode) {
+            $messages[$messageNode->localName] = $messageNode->nodeValue;
         }
 
-        switch ($xml->getName()) {
+        switch ($response->documentElement->tagName) {
             /**
              * Test merchant credentials
              */
@@ -197,9 +232,11 @@ class Mercantile_Gateways_GCheckout
      */
     static public function testCredentials(array $credentials = null)
     {
-        $xml = sprintf('<hello xmlns="%s"/>', self::API_XML_SCHEMA);
+        $request = new DomDocument(self::XML_VERSION, self::XML_ENCODING);
 
-        $xmlObj = new SimpleXMLElement($xml);
+        $request->appendChild(new DomElement(self::HELLO));
+
+        $request->documentElement->setAttribute(self::XMLNS, self::API_XML_SCHEMA);
 
         $url = self::API_SANDBOX_ENDPOINT . $credentials[self::MERCHANT_ID];
 
@@ -207,7 +244,7 @@ class Mercantile_Gateways_GCheckout
 
         $client->setAuth($credentials[self::MERCHANT_ID], $credentials[self::MERCHANT_KEY], Zend_Http_Client::AUTH_BASIC);
 
-        $client->setRawData($xmlObj->asXml());
+        $client->setRawData($request->saveXML());
 
         $client->request('POST');
 
@@ -272,16 +309,15 @@ class Mercantile_Gateways_GCheckout
         if (get_class($checkout) == 'DOMElement') {
             $checkout = $checkout->saveXML();
         } else if (get_class($checkout) == 'Mercantile_Gateways_GCheckout_Checkout') {
-            // type coerce GCheckout_Checkout w __toString()
+            // type coerce GCheckout_Checkout::__toString()
             $checkout = (string)$checkout;
         } else {
             throw new Mercantile_Exception('Checkout shopping cart wrong type, is ' . get_class($checkout));
         }
 
-        // @TODO: sandbox? production? what? FIX THIS
-        $url = self::API_SANDBOX_ENDPOINT . $this->_credentials[self::MERCHANT_ID];
+        $endpoint = $this->_apiEndpoint . $this->_credentials[self::MERCHANT_ID];
 
-        $client = new Zend_Http_Client($url);
+        $client = new Zend_Http_Client($endpoint);
 
         $client->setAuth($this->_credentials[self::MERCHANT_ID], 
                          $this->_credentials[self::MERCHANT_KEY], 

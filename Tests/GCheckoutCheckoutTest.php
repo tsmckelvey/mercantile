@@ -69,7 +69,7 @@ class GCheckoutCheckoutTest extends PHPUnit_Framework_TestCase
     public function testGCheckoutCheckout_optionalParams()
     {
         $options = array(
-            'edit-cart-url' => 'www.something.com',
+            'edit-cart-url' => 'http://www.something.com',
             'continue-shopping-url' => 'www.something.com',
             'request-buyer-phone-number' => true,
             );
