@@ -102,20 +102,25 @@ class Mercantile_Gateways_GCheckout
 
     const H = 'h';
 
+	/**
+	 * HTTP client
+	 */
+	protected $_httpClient = null;
+
     /**
      * The API endpoint to point to, variable between production and sandbox (see:setTestMode);
      */
-    private $_apiEndpoint = null;
+    protected $_apiEndpoint = null;
 
     /**
      * k/v pair of API credentials
      */
-    private $_credentials = array();
+    protected $_credentials = array();
 
     /**
      * Raw body of last HTTP request
      */
-    private $_lastRequest = null;
+    protected $_lastRequest = null;
 
     /**
      * Construct GCheckout base object
@@ -125,19 +130,26 @@ class Mercantile_Gateways_GCheckout
      *
      * @param array $credentials Associative array of credentials
      */
-    public function __construct(array $credentials = null)
+    public function __construct(array $credentials = null, $httpClient = null)
     {
         if (!isset($credentials[self::MERCHANT_ID])) {
             throw new Mercantile_Exception('"merchant_id" not string, is ' . @gettype($credentials[self::MERCHANT_ID]));
-        } else {
-            $this->_credentials[self::MERCHANT_ID] = $credentials[self::MERCHANT_ID];
         }
+
+		$this->_credentials[self::MERCHANT_ID] = $credentials[self::MERCHANT_ID];
 
         if (!isset($credentials[self::MERCHANT_KEY])) {
             throw new Mercantile_Exception('"merchant_key" not string, is ' . @gettype($credentials[self::MERCHANT_KEY]));
-        } else {
-            $this->_credentials[self::MERCHANT_KEY] = $credentials[self::MERCHANT_KEY];
         }
+
+		$this->_credentials[self::MERCHANT_KEY] = $credentials[self::MERCHANT_KEY];
+
+		if (!isset($httpClient)) {
+			throw new Mercantile_Exception('httpClient not set');
+		}
+
+		// @todo: make sure this implements interface
+		$this->_httpClient = $httpClient;
 
         $this->setTestMode(false);
     }
@@ -230,7 +242,7 @@ class Mercantile_Gateways_GCheckout
      * @param array $credentials Associative array of merchant_id and merchant_key
      * @return Mercantile_Gateway_Response
      */
-    static public function testCredentials(array $credentials = null)
+    public function testCredentials(array $credentials = null)
     {
         $request = new DomDocument(self::XML_VERSION, self::XML_ENCODING);
 
@@ -240,7 +252,7 @@ class Mercantile_Gateways_GCheckout
 
         $url = self::API_SANDBOX_ENDPOINT . $credentials[self::MERCHANT_ID];
 
-        $client = new Zend_Http_Client($url);
+		$client = $this->_httpClient->setUri($url);
 
         $client->setAuth($credentials[self::MERCHANT_ID], $credentials[self::MERCHANT_KEY], Zend_Http_Client::AUTH_BASIC);
 
@@ -317,7 +329,7 @@ class Mercantile_Gateways_GCheckout
 
         $endpoint = $this->_apiEndpoint . $this->_credentials[self::MERCHANT_ID];
 
-        $client = new Zend_Http_Client($endpoint);
+		$client = $this->_httpClient->setUri($endpoint);
 
         $client->setAuth($this->_credentials[self::MERCHANT_ID], 
                          $this->_credentials[self::MERCHANT_KEY], 

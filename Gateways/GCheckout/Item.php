@@ -45,8 +45,11 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 
         $this->documentElement->appendChild(new DOMElement('item-description', $itemInfo[self::DESCRIPTION]));
 
-        if (!isset($itemInfo[self::PRICE]) or !is_float($itemInfo[self::PRICE]))
+		// price parsing
+		if (!isset($itemInfo[self::PRICE]) ||
+			!is_float((float)($itemInfo[self::PRICE]))) {
             throw new Mercantile_Exception('Item unit-price not float, is ' . gettype($itemInfo[self::PRICE]));
+		}
 
         $price = $this->documentElement->appendChild(new DOMElement('unit-price', $itemInfo[self::PRICE]));
         $price->setAttribute('currency', 'USD');
