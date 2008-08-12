@@ -244,6 +244,10 @@ class Mercantile_Gateways_GCheckout
      */
     public function testCredentials(array $credentials = null)
     {
+		if (null == $credentials) {
+			$credentials = $this->_credentials;
+		}
+
         $request = new DomDocument(self::XML_VERSION, self::XML_ENCODING);
 
         $request->appendChild(new DomElement(self::HELLO));
