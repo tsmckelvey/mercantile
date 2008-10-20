@@ -159,7 +159,7 @@ class Mercantile_Gateways_GCheckout
      */
     public function setTestMode($testMode = true)
     {
-        $this->_apiEndpoint = ($testMode) ? self::API_LIVE_ENDPOINT : self::API_SANDBOX_ENDPOINT;
+        $this->_apiEndpoint = ($testMode) ? self::API_SANDBOX_ENDPOINT : self::API_LIVE_ENDPOINT;
     }
 
     /**
