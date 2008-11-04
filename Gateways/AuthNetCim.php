@@ -60,9 +60,7 @@ class Mercantile_Gateways_AuthNetCim
         $doc = new DOMDocument();
 
         $merchantAuth = $doc->appendChild(new DOMElement('merchantAuthentication'));
-
         $merchantAuth->appendChild(new DOMElement('name', $login));
-
         $merchantAuth->appendChild(new DOMElement('transactionKey', $tranKey));
 
         $this->_merchantAuth = $merchantAuth;
@@ -72,9 +70,7 @@ class Mercantile_Gateways_AuthNetCim
     {
         // @TODO: validate $response is string
         $responseDoc = new DOMDocument();
-
         $responseDoc->loadXML($response, LIBXML_NOWARNING);
-
         $responseDoc->formatOutput = true;
 
         $responseMessages = $responseDoc->getElementsByTagName('message');
@@ -131,22 +127,16 @@ class Mercantile_Gateways_AuthNetCim
         // @TODO: implement refId
         // @TODO: validate requestName
         $request = new DOMDocument();
-
         $request->formatOutput = true;
 
         $rootElement = $request->appendChild(new DOMElement($requestType));
-
         $rootElement->setAttribute('xmlns', self::API_XML_SCHEMA);
-
         $rootElement->appendChild($request->importNode($this->_merchantAuth, $deep = true));
-
         $rootElement->appendChild($request->importNode($payLoad->documentElement, $deep = true));
 
         // @TODO: abstract endpoint to dev/prod switch
         $client = new Zend_Http_Client( self::API_SANDBOX_ENDPOINT );
-
         $client->setRawData( $request->saveXML(), 'application/xml');
-
         $client->request('POST');
 
         $this->_lastRequest = $client->getLastRequest();
@@ -187,7 +177,7 @@ class Mercantile_Gateways_AuthNetCim
 
     public function updateCustomerProfile($cusProfileId = null, $refId = null)
     {
-
+		// TODO
     }
 
     public function deleteCustomerProfile($cusProfileId = null, $refId = null)
