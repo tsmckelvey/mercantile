@@ -1,5 +1,15 @@
 <?php
+require_once '/opt/Milksites/library/Zend/Loader.php';
+Zend_Loader::registerAutoload();
+set_include_path(
+	'/opt/Milksites/library' . PATH_SEPARATOR .
+	get_include_path()
+);
+require_once dirname(dirname(__FILE__)) . '/Gateways/AuthNetArb.php';
 require_once dirname(dirname(__FILE__)) . '/Gateways/AuthNetArb/Subscription.php';
+require_once dirname(dirname(__FILE__)) . '/Gateways/AuthNetArb/Response.php';
+require_once dirname(dirname(__FILE__)) . '/Gateways/AuthNetArb/CreditCard.php';
+require_once dirname(dirname(__FILE__)) . '/Response.php';
 
 class AuthNetArbTest extends PHPUnit_Framework_TestCase
 {
@@ -15,16 +25,38 @@ class AuthNetArbTest extends PHPUnit_Framework_TestCase
 
 	public function testSetOptions()
 	{
+		/*
+		// TODO this is broken?
 		$this->sub->setOptions(array(
-			'name' => 'a test subscription'
+			'name' => 'a test subscription',
 		));
+		*/
+
+		$creditCard = new Mercantile_Gateways_AuthNetArb_CreditCard();
+		$creditCard->setExpirationDate('2011-10')
+				   ->setCardNumber(4222222222222222);
 
 		$this->sub->setInterval(1, 'months')
-				  ->setStartDate('2009-12-01')
-				  ->setTotalOccurrences(300)
-				  ->setAmount(25);
+				  ->setStartDate('2009-11-01')
+				  ->setAmount('25')
+				  ->setPayment($creditCard)
+				  ->setTotalOccurrences(9999)
+				  ->setBillingAddress(array(
+					'firstName' => 'Bob',
+					'lastName'  => 'Bobsen',
+					'address' => '6947 Coal Creek Pkwy SE #717',
+					'city' => 'Newcastle',
+					'state' => 'WA',
+					'zip' => '98069',
+					'country' => 'USA'
+				  ));
 
-		echo $this->sub;
+		$arb = new Mercantile_Gateways_AuthNetArb(array(
+			'login' => '8wd65QSj',
+			'tran_key' => '8CP6zJ7uD875J6tY'
+		));
+		$response = $arb->createSubscription($this->sub);
+		print_r($response);
 	}
 
 	public function testSetIntervalOutOfDaysRange()

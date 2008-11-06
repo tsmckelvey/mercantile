@@ -65,8 +65,18 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setOptions(array $options)
 	{
 		if (isset($options[self::NAME])) {
-			$this->documentElement->setAttribute('name', $options[self::NAME]);
+			$this->documentElement->appendChild(new DomElement('name'))->nodeValue = $options[self::NAME];
 		}
+	}
+
+	/**
+	 * @optional
+	 */
+	public function setName($name)
+	{
+		$this->documentElement->appendChild(new DomElement('name'))->nodeValue = $name;
+
+		return $this;
 	}
 
 	/**
@@ -146,9 +156,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setTrialOccurrences(): ' .
 				$occurrences . ' must be less than 3 long');
 		}
-
 		$this->_paymentSchedulElement->appendChild(new DomElement('trialOccurrences'))->nodeValue = $occurrences;
-
 		return $this;
 	}
 
@@ -159,13 +167,41 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setAmount($amount)
 	{
 		// TODO validate and test
-
 		$this->documentElement->appendChild(new DomElement('amount'))->nodeValue = $amount;
-
 		return $this;
 	}
 
 	// TODO setTrialAmount
+
+	/**
+	 * // TODO this should accept BankAccount object, too
+	 * @required
+	 * @param Mercantile_Gateways_AuthNetArb_CreditCard $creditCard 
+	 */
+	public function setPayment(Mercantile_Billing_CreditCard_Interface $creditCard)
+	{
+		$paymentElement = $this->documentElement->appendChild(new DomElement('payment'));
+		$creditCardElement = $paymentElement->appendChild(new DomElement('creditCard'));
+		$creditCardElement->appendChild(new DomElement('cardNumber'))->nodeValue = $creditCard->getCardNumber();
+		$creditCardElement->appendChild(new DomElement('expirationDate'))->nodeValue = $creditCard->getExpirationDate();
+		return $this;
+	}
+
+	/**
+	 * @required
+	 */
+	public function setBillingAddress(array $billingAddress)
+	{
+		// TODO validation
+		$billToElement = $this->documentElement->appendChild(new DomElement('billTo'));
+		$billToElement->appendChild(new DomElement('firstName'))->nodeValue = $billingAddress['firstName'];
+		$billToElement->appendChild(new DomElement('lastName'))->nodeValue = $billingAddress['lastName'];
+		$billToElement->appendChild(new DomElement('address'))->nodeValue = $billingAddress['address'];
+		$billToElement->appendChild(new DomElement('city'))->nodeValue = $billingAddress['city'];
+		$billToElement->appendChild(new DomElement('state'))->nodeValue = $billingAddress['state'];
+		$billToElement->appendChild(new DomElement('zip'))->nodeValue = $billingAddress['zip'];
+		$billToElement->appendChild(new DomElement('country'))->nodeValue = $billingAddress['country'];
+	}
 
 	public function __toString()
 	{

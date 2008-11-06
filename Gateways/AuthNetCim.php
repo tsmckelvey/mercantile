@@ -43,7 +43,8 @@ class Mercantile_Gateways_AuthNetCim
         'E00041',
         'E00042',
         'E00043',
-        'E00044');
+        'E00044',
+		);
 
     /**
      * Contains login and transaction key
