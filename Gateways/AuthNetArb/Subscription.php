@@ -37,6 +37,16 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	const ZIP = 'zip';
 	const COUNTRY = 'country';
 
+	const ORDER = 'order';
+	const INVOICE_NUMBER = 'invoiceNumber';
+	const DESCRIPTION = 'description';
+
+	const CUSTOMER = 'customer';
+	const ID = 'id';
+	const EMAIL = 'email';
+	const PHONE_NUMBER = 'phoneNumber';
+	const FAX_NUMBER = 'faxNumber';
+
 	/**
 	 * Acceptable optional values
 	 */
@@ -224,7 +234,6 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	 */
 	public function setBillingAddress(array $billingAddress)
 	{
-		// TODO validation
 		$billToElement = $this->documentElement->appendChild(new DomElement(self::BILL_TO));
 		if (!isset($billingAddress[self::FIRST_NAME]))
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setBillingAddress() ' .
@@ -253,6 +262,52 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 		
 		if (isset($billingAddress[self::COUNTRY]))
 			$billToElement->appendChild(new DomElement(self::COUNTRY))->nodeValue = $billingAddress[self::COUNTRY];
+
+		return $this;
+	}
+
+	/**
+	 * Contains optional order information
+	 * @param int $invoiceNumber Merchant-assigned invoice number for the subscription
+	 * @param string $description Description of the subscription
+	 * @optional
+	 */
+	public function setOrder($invoiceNumber = null, $description = null)
+	{
+		$orderElement = $this->documentElement->appendChild(new DomElement(self::ORDER));	
+
+		if (isset($invoiceNumber))
+			$orderElement->appendChild(new DomElement(self::INVOICE_NUMBER))->nodeValue = $invoiceNumber;
+
+		if (isset($description))
+			$orderElement->appendChild(new DomElement(self::DESCRIPTION))->nodeValue = $description;
+
+		return $this;
+	}
+
+	/**
+	 * Contains information about the customer
+	 * @param string $id Merchant-assigned identifier for the customer
+	 * @param string $email The customer's email address
+	 * @param string $phoneNumber The customer's phone number
+	 * @param string $faxNumber The customer's fax number
+	 * @optional
+	 */
+	public function setCustomer($id = null, $email = null, $phoneNumber = null, $faxNumber = null)
+	{
+		$customerElement = $this->documentElement->appendChild(new DomElement(self::CUSTOMER));
+
+		if (isset($id))
+			$customerElement->appendChild(new DomElement(self::ID))->nodeValue = $id;
+
+		if (isset($email))
+			$customerElement->appendChild(new DomElement(self::EMAIL))->nodeValue = $email;
+
+		if (isset($phoneNumber))
+			$customerElement->appendChild(new DomElement(self::PHONE_NUMBER))->nodeValue = $phoneNumber;
+
+		if (isset($faxNumber))
+			$customerElement->appendChild(new DomElement(self::FAX_NUMBER))->nodeValue = $faxNumber;
 
 		return $this;
 	}
