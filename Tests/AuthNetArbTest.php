@@ -56,7 +56,6 @@ class AuthNetArbTest extends PHPUnit_Framework_TestCase
 			'tran_key' => '8CP6zJ7uD875J6tY'
 		));
 		$response = $arb->createSubscription($this->sub);
-		print_r($response);
 	}
 
 	public function testSetIntervalOutOfDaysRange()

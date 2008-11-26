@@ -5,6 +5,38 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 {
 	const NAME = 'name';
 
+	const SUBSCRIPTION = 'subscription';
+	const PAYMENT_SCHEDULE = 'paymentSchedule';
+	const INTERVAL = 'interval';
+
+	const NAME = 'name';
+
+	const LENGTH = 'length';
+	const UNIT = 'unit';
+
+	const START_DATE_FORMAT = 'Y-M-d';
+	const START_DATE = 'startDate';
+
+	const TOTAL_OCCURRENCES = 'totalOccurrences';
+	const TRIAL_OCCURRENCES = 'trialOccurrences';
+
+	const AMOUNT = 'amount';
+
+	const PAYMENT = 'payment';
+	const CREDIT_CARD = 'creditCard';
+	const CARD_NUMBER = 'cardNumber';
+	const EXPIRATION_DATE = 'expirationDate';
+
+	const BILL_TO = 'billTo';
+	const FIRST_NAME = 'firstName';
+	const LAST_NAME = 'lastName';
+	const COMPANY = 'company';
+	const ADDRESS = 'address';
+	const CITY = 'city';
+	const STATE = 'state';
+	const ZIP = 'zip';
+	const COUNTRY = 'country';
+
 	/**
 	 * Acceptable optional values
 	 */
@@ -51,21 +83,21 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 
 		$this->formatOutput = true;
 
-		$this->appendChild(new DomElement('subscription'));
+		$this->appendChild(new DomElement(self::SUBSCRIPTION));
 		
 		if (is_array($options)) $this->setOptions($options);
 
 		$this->_paymentScheduleElement = $this->documentElement
-											  ->appendChild(new DomElement('paymentSchedule')); /* @required */
+											  ->appendChild(new DomElement(self::PAYMENT_SCHEDULE)); /* @required */
 
 		$this->_intervalElement = $this->_paymentScheduleElement
-						 			   ->appendChild(new DomElement('interval')); /* @required */
+						 			   ->appendChild(new DomElement(self::INTERVAL)); /* @required */
 	}
 
 	public function setOptions(array $options)
 	{
 		if (isset($options[self::NAME])) {
-			$this->documentElement->appendChild(new DomElement('name'))->nodeValue = $options[self::NAME];
+			$this->documentElement->appendChild(new DomElement(self::NAME))->nodeValue = $options[self::NAME];
 		}
 	}
 
@@ -74,7 +106,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	 */
 	public function setName($name)
 	{
-		$this->documentElement->appendChild(new DomElement('name'))->nodeValue = $name;
+		$this->documentElement->appendChild(new DomElement(self::NAME))->nodeValue = $name;
 
 		return $this;
 	}
@@ -103,9 +135,9 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$unit . ' not a valid Interval Unit');
 		}
 
-		$this->_intervalElement->appendCHild(new DomElement('length'))->nodeValue = $length;
+		$this->_intervalElement->appendCHild(new DomElement(self::LENGTH))->nodeValue = $length;
 
-		$this->_intervalElement->appendChild(new DomElement('unit'))->nodeValue= $unit;
+		$this->_intervalElement->appendChild(new DomElement(self::UNIT))->nodeValue= $unit;
 
 		return $this;
 	}
@@ -118,10 +150,10 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	{
 		if (!preg_match('/\d{4}\-\d{2}\-\d{2}/', $date)) {
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setStartDate(): ' .
-				$date . ' does not match YYY-MM-DD');
+				$date . ' does not match ' . self::START_DATE_PATTERN);
 		}
 
-		$this->_paymentScheduleElement->appendChild(new DomElement('startDate'))->nodeValue = $date;
+		$this->_paymentScheduleElement->appendChild(new DomElement(self::START_DATE))->nodeValue = $date;
 
 		return $this;
 	}
@@ -139,7 +171,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$occurrences . ' must be less than 5 long');
 		}
 
-		$this->_paymentScheduleElement->appendChild(new DomElement('totalOccurrences'))->nodeValue = $occurrences;
+		$this->_paymentScheduleElement->appendChild(new DomElement(self::TOTAL_OCCURRENCES))->nodeValue = $occurrences;
 
 		return $this;
 	}
@@ -156,7 +188,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setTrialOccurrences(): ' .
 				$occurrences . ' must be less than 3 long');
 		}
-		$this->_paymentSchedulElement->appendChild(new DomElement('trialOccurrences'))->nodeValue = $occurrences;
+		$this->_paymentSchedulElement->appendChild(new DomElement(self::TRIAL_OCCURRENCES))->nodeValue = $occurrences;
 		return $this;
 	}
 
@@ -167,7 +199,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setAmount($amount)
 	{
 		// TODO validate and test
-		$this->documentElement->appendChild(new DomElement('amount'))->nodeValue = $amount;
+		$this->documentElement->appendChild(new DomElement(self::AMOUNT))->nodeValue = $amount;
 		return $this;
 	}
 
@@ -180,10 +212,10 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	 */
 	public function setPayment(Mercantile_Billing_CreditCard_Interface $creditCard)
 	{
-		$paymentElement = $this->documentElement->appendChild(new DomElement('payment'));
-		$creditCardElement = $paymentElement->appendChild(new DomElement('creditCard'));
-		$creditCardElement->appendChild(new DomElement('cardNumber'))->nodeValue = $creditCard->getCardNumber();
-		$creditCardElement->appendChild(new DomElement('expirationDate'))->nodeValue = $creditCard->getExpirationDate();
+		$paymentElement = $this->documentElement->appendChild(new DomElement(self::PAYMENT));
+		$creditCardElement = $paymentElement->appendChild(new DomElement(self::CREDIT_CARD));
+		$creditCardElement->appendChild(new DomElement(self::CARD_NUMBER))->nodeValue = $creditCard->getCardNumber();
+		$creditCardElement->appendChild(new DomElement(self::EXPIRATION_DATE))->nodeValue = $creditCard->getExpirationDate();
 		return $this;
 	}
 
@@ -193,14 +225,36 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setBillingAddress(array $billingAddress)
 	{
 		// TODO validation
-		$billToElement = $this->documentElement->appendChild(new DomElement('billTo'));
-		$billToElement->appendChild(new DomElement('firstName'))->nodeValue = $billingAddress['firstName'];
-		$billToElement->appendChild(new DomElement('lastName'))->nodeValue = $billingAddress['lastName'];
-		$billToElement->appendChild(new DomElement('address'))->nodeValue = $billingAddress['address'];
-		$billToElement->appendChild(new DomElement('city'))->nodeValue = $billingAddress['city'];
-		$billToElement->appendChild(new DomElement('state'))->nodeValue = $billingAddress['state'];
-		$billToElement->appendChild(new DomElement('zip'))->nodeValue = $billingAddress['zip'];
-		$billToElement->appendChild(new DomElement('country'))->nodeValue = $billingAddress['country'];
+		$billToElement = $this->documentElement->appendChild(new DomElement(self::BILL_TO));
+		if (!isset($billingAddress[self::FIRST_NAME]))
+			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setBillingAddress() ' .
+				self::FIRST_NAME . ' not in $billingAddress');
+		$billToElement->appendChild(new DomElement(self::FIRST_NAME))->nodeValue = $billingAddress[self::FIRST_NAME];
+
+		if (!isset($billingAddress[self::LAST_NAME]))
+			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setBillingAddress() ' .
+				self::LAST_NAME . ' not in $billingAddress');
+		$billToElement->appendChild(new DomElement(self::LAST_NAME))->nodeValue = $billingAddress[self::LAST_NAME];
+
+		if (isset($billingAddress[self::COMPANY]))
+			$billToElement->appendChild(new DomElement(self::COMPANY))->nodeValue = $billingAddress[self::COMPANY];
+
+		if (isset($billingAddress[self::ADDRESS]))
+			$billToElement->appendChild(new DomElement(self::ADDRESS))->nodeValue = $billingAddress[self::ADDRESS];
+
+		if (isset($billingAddress[self::CITY]))
+			$billToElement->appendChild(new DomElement(self::CITY))->nodeValue = $billingAddress[self::CITY];
+
+		if (isset($billingAddress[self::STATE]))
+			$billToElement->appendChild(new DomElement(self::STATE))->nodeValue = $billingAddress[self::STATE];
+
+		if (isset($billingAddress[self::ZIP]))
+			$billToElement->appendChild(new DomElement(self::ZIP))->nodeValue = $billingAddress[self::ZIP];
+		
+		if (isset($billingAddress[self::COUNTRY]))
+			$billToElement->appendChild(new DomElement(self::COUNTRY))->nodeValue = $billingAddress[self::COUNTRY];
+
+		return $this;
 	}
 
 	public function __toString()

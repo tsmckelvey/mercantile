@@ -31,6 +31,16 @@ class Mercantile_Gateways_AuthNetArb
 		self::ARB_CANCEL_SUBSCRIPTION_REQUEST
 	);
 
+	const MERCHANT_AUTHENTICATION = 'merchantAuthentication';
+	const NAME = 'name';
+	const TRANSACTION_KEY = 'transactionKey';
+
+	const MESSAGE = 'message';
+
+	const REF_ID = 'refId';
+
+	const SUBSCRIPTION_ID = 'subscriptionId';
+
 	private $_lastRequest = null;
 
 	protected $_merchantAuth = null;
@@ -80,14 +90,14 @@ class Mercantile_Gateways_AuthNetArb
 
 	public function __construct(array $credentials = null)
 	{
-		$login = $credentials['login'];
-		$tranKey = $credentials['tran_key'];
+		$login = $credentials[self::LOGIN];
+		$tranKey = $credentials[self::TRANSACTION_KEY];
 
 		$doc = new DOMDocument();
 
-		$merchantAuth = $doc->appendChild(new DOMElement('merchantAuthentication'));
-		$merchantAuth->appendChild(new DOMElement('name', $login));
-		$merchantAuth->appendChild(new DOMElement('transactionKey', $tranKey));
+		$merchantAuth = $doc->appendChild(new DOMElement(self::MERCHANT_AUTHENTICATION));
+		$merchantAuth->appendChild(new DOMElement(self::NAME, $login));
+		$merchantAuth->appendChild(new DOMElement(self::TRANSACTION_KEY, $tranKey));
 
 		$this->_merchantAuth = $merchantAuth;
 	}
@@ -109,7 +119,7 @@ class Mercantile_Gateways_AuthNetArb
 		$responseDoc->loadXML($response, LIBXML_NOWARNING);
 		$responseDoc->formatOutput = true;
 
-		$responseMessages = $responseDoc->getElementsByTagName('message');
+		$responseMessages = $responseDoc->getElementsByTagName(self::MESSAGE);
 
 		$messages = array();
 
@@ -148,7 +158,7 @@ class Mercantile_Gateways_AuthNetArb
 		$rootElement->setAttribute('xmlns', self::API_XML_SCHEMA);
 		$rootElement->appendChild($request->importNode($this->_merchantAuth, $deep = true));
 		// TODO validate refId
-		if (isset($refId)) $payLoad->documentElement->appendChild(new DomElement('refId'))->nodeValue = $refId;
+		if (isset($refId)) $payLoad->documentElement->appendChild(new DomElement(self::REF_IF))->nodeValue = $refId;
 		$rootElement->appendChild($request->importNode($payLoad->documentElement, $deep = true));
 
 		$client = new Zend_Http_Client( ($this->_mode === self::TEST) ? self::API_SANDBOX_ENDPOINT :
@@ -179,7 +189,7 @@ class Mercantile_Gateways_AuthNetArb
 	protected function _appendSubscriptionId(Mercantile_Gateways_AuthNetArb_Subscription $subscription, $subscriptionId)
 	{
 		// TODO validate id
-		$subscription->documentElement->appendChild(new DomElement('subscriptionId'))->nodeValue = $subscriptionId;
+		$subscription->documentElement->appendChild(new DomElement(self::SUBSCRIPTION_ID))->nodeValue = $subscriptionId;
 
 		return $subscription;
 	}
