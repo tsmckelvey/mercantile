@@ -109,7 +109,6 @@ class Mercantile_Gateways_AuthNetArb
 		$responseDoc->loadXML($response, LIBXML_NOWARNING);
 		$responseDoc->formatOutput = true;
 
-		print_r($responseDoc->saveXML());
 		$responseMessages = $responseDoc->getElementsByTagName('message');
 
 		$messages = array();
