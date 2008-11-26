@@ -90,7 +90,7 @@ class Mercantile_Gateways_AuthNetArb
 
 	public function __construct(array $credentials = null)
 	{
-		$login = $credentials[self::LOGIN];
+		$login = $credentials[self::NAME];
 		$tranKey = $credentials[self::TRANSACTION_KEY];
 
 		$doc = new DOMDocument();
@@ -168,7 +168,6 @@ class Mercantile_Gateways_AuthNetArb
 
 		$this->_lastRequest = $client->getLastRequest();
 
-		echo $request->saveXML();
 		$response = $this->_parseResponse($client->getLastResponse()->getRawBody());
 
 		return $response;
