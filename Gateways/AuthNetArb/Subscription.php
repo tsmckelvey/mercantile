@@ -9,8 +9,6 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	const PAYMENT_SCHEDULE = 'paymentSchedule';
 	const INTERVAL = 'interval';
 
-	const NAME = 'name';
-
 	const LENGTH = 'length';
 	const UNIT = 'unit';
 
@@ -102,7 +100,14 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 
 		$this->_intervalElement = $this->_paymentScheduleElement
 						 			   ->appendChild(new DomElement(self::INTERVAL)); /* @required */
+
+		$this->init();
 	}
+
+	/**
+	 * Child method for initialization
+	 */
+	public function init() {}
 
 	public function setOptions(array $options)
 	{
@@ -145,7 +150,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$unit . ' not a valid Interval Unit');
 		}
 
-		$this->_intervalElement->appendCHild(new DomElement(self::LENGTH))->nodeValue = $length;
+		$this->_intervalElement->appendChild(new DomElement(self::LENGTH))->nodeValue = $length;
 
 		$this->_intervalElement->appendChild(new DomElement(self::UNIT))->nodeValue= $unit;
 
@@ -160,7 +165,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	{
 		if (!preg_match('/\d{4}\-\d{2}\-\d{2}/', $date)) {
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setStartDate(): ' .
-				$date . ' does not match ' . self::START_DATE_PATTERN);
+				$date . ' does not match ' . self::START_DATE_FORMAT);
 		}
 
 		$this->_paymentScheduleElement->appendChild(new DomElement(self::START_DATE))->nodeValue = $date;

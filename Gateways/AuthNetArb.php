@@ -136,7 +136,8 @@ class Mercantile_Gateways_AuthNetArb
 				$success = false;
 				break;
 			case self::ARB_CREATE_SUBSCRIPTION_RESPONSE:
-
+				$subscriptionId = $responseDoc->getElementsByTagName(self::SUBSCRIPTION_ID)->item(0)->nodeValue;
+				$params[self::SUBSCRIPTION_ID] = $subscriptionId;
 				break;
 			case self::ARB_UPDATE_SUBSCRIPTION_RESPONSE:
 				break;
@@ -158,7 +159,7 @@ class Mercantile_Gateways_AuthNetArb
 		$rootElement->setAttribute('xmlns', self::API_XML_SCHEMA);
 		$rootElement->appendChild($request->importNode($this->_merchantAuth, $deep = true));
 		// TODO validate refId
-		if (isset($refId)) $payLoad->documentElement->appendChild(new DomElement(self::REF_IF))->nodeValue = $refId;
+		if (isset($refId)) $rootElement->appendChild(new DomElement(self::REF_ID))->nodeValue = $refId;
 		$rootElement->appendChild($request->importNode($payLoad->documentElement, $deep = true));
 
 		$client = new Zend_Http_Client( ($this->_mode === self::TEST) ? self::API_SANDBOX_ENDPOINT :

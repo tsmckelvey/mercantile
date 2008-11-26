@@ -44,7 +44,7 @@ class AuthNetArbTest extends PHPUnit_Framework_TestCase
 				  ->setBillingAddress(array(
 					'firstName' => 'Bob',
 					'lastName'  => 'Bobsen',
-					'address' => '6947 Coal Creek Pkwy SE #717',
+					'address' => '6947 Coal Creek Pkwy SE #71789023',
 					'city' => 'Newcastle',
 					'state' => 'WA',
 					'zip' => '98069',
@@ -52,10 +52,12 @@ class AuthNetArbTest extends PHPUnit_Framework_TestCase
 				  ));
 
 		$arb = new Mercantile_Gateways_AuthNetArb(array(
-			'login' => '8wd65QSj',
-			'tran_key' => '8CP6zJ7uD875J6tY'
+			'name' => '8wd65QSj',
+			'transactionKey' => '8CP6zJ7uD875J6tY'
 		));
+
 		$response = $arb->createSubscription($this->sub);
+		print_r($response);
 	}
 
 	public function testSetIntervalOutOfDaysRange()
