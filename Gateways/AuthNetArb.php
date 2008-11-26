@@ -136,8 +136,10 @@ class Mercantile_Gateways_AuthNetArb
 				$success = false;
 				break;
 			case self::ARB_CREATE_SUBSCRIPTION_RESPONSE:
-				$subscriptionId = $responseDoc->getElementsByTagName(self::SUBSCRIPTION_ID)->item(0)->nodeValue;
-				$params[self::SUBSCRIPTION_ID] = $subscriptionId;
+				if (true === $success) {
+					$subscriptionId = $responseDoc->getElementsByTagName(self::SUBSCRIPTION_ID)->item(0)->nodeValue;
+					$params[self::SUBSCRIPTION_ID] = $subscriptionId;
+				}
 				break;
 			case self::ARB_UPDATE_SUBSCRIPTION_RESPONSE:
 				break;
