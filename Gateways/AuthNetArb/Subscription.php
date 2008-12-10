@@ -12,7 +12,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	const LENGTH = 'length';
 	const UNIT = 'unit';
 
-	const START_DATE_FORMAT = 'Y-M-d';
+	const START_DATE_FORMAT = 'Y-M-dd';
 	const START_DATE = 'startDate';
 
 	const TOTAL_OCCURRENCES = 'totalOccurrences';
