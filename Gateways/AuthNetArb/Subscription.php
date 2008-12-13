@@ -76,6 +76,11 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	);
 
 	/**
+	 * Amount element
+	 */
+	protected $_amountElement = null;
+
+	/**
 	 * Payment schedule element, commonly accessed
 	 */
 	protected $_paymentScheduleElement = null;
@@ -94,6 +99,9 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 		$this->appendChild(new DomElement(self::SUBSCRIPTION));
 		
 		if (is_array($options)) $this->setOptions($options);
+
+		$this->_amountElement = $this->documentElement
+									 ->appendChild(new DomElement(self::AMOUNT));
 
 		$this->_paymentScheduleElement = $this->documentElement
 											  ->appendChild(new DomElement(self::PAYMENT_SCHEDULE)); /* @required */
@@ -214,7 +222,7 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setAmount($amount)
 	{
 		// TODO validate and test
-		$this->documentElement->appendChild(new DomElement(self::AMOUNT))->nodeValue = $amount;
+		$this->_amountElement->nodeValue = $amount;
 		return $this;
 	}
 
