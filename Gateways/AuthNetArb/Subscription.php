@@ -103,13 +103,29 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 		$this->_amountElement = $this->documentElement
 									 ->appendChild(new DomElement(self::AMOUNT));
 
-		$this->_paymentScheduleElement = $this->documentElement
-											  ->appendChild(new DomElement(self::PAYMENT_SCHEDULE)); /* @required */
 
-		$this->_intervalElement = $this->_paymentScheduleElement
-						 			   ->appendChild(new DomElement(self::INTERVAL)); /* @required */
 
 		$this->init();
+	}
+
+	protected function _createPaymentScheduleElement()
+	{
+		if (null === $this->_paymentScheduleElement) {
+			$this->_paymentScheduleElement = $this->documentElement
+												  ->appendChild(new DomElement(self::PAYMENT_SCHEDULE)); /* @required */
+		}
+
+		return $this->_paymentScheduleElement;
+	}
+
+	protected function _createIntervalElement()
+	{
+		if (null === $this->_intervalElement) {
+			$this->_intervalElement = $this->_createPaymentScheduleElement()
+										   ->appendChild(new DomElement(self::INTERVAL)); /* @required */
+		}
+
+		return $this->_intervalElement;
 	}
 
 	/**
@@ -158,9 +174,11 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$unit . ' not a valid Interval Unit');
 		}
 
-		$this->_intervalElement->appendChild(new DomElement(self::LENGTH))->nodeValue = $length;
+		$this->_createIntervalElement()
+			 ->appendChild(new DomElement(self::LENGTH))->nodeValue = $length;
 
-		$this->_intervalElement->appendChild(new DomElement(self::UNIT))->nodeValue= $unit;
+		$this->_createIntervalElement()
+			 ->appendChild(new DomElement(self::UNIT))->nodeValue = $unit;
 
 		return $this;
 	}
@@ -176,7 +194,8 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$date . ' does not match ' . self::START_DATE_FORMAT);
 		}
 
-		$this->_paymentScheduleElement->appendChild(new DomElement(self::START_DATE))->nodeValue = $date;
+		$this->_createPaymentScheduleElement()
+			 ->appendChild(new DomElement(self::START_DATE))->nodeValue = $date;
 
 		return $this;
 	}
@@ -194,7 +213,8 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 				$occurrences . ' must be less than 5 long');
 		}
 
-		$this->_paymentScheduleElement->appendChild(new DomElement(self::TOTAL_OCCURRENCES))->nodeValue = $occurrences;
+		$this->_createPaymentScheduleElement()
+			 ->appendChild(new DomElement(self::TOTAL_OCCURRENCES))->nodeValue = $occurrences;
 
 		return $this;
 	}
@@ -211,7 +231,10 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 			throw new Mercantile_Exception('Mercantile_Gateways_AuthNetArb_Subscription::setTrialOccurrences(): ' .
 				$occurrences . ' must be less than 3 long');
 		}
-		$this->_paymentSchedulElement->appendChild(new DomElement(self::TRIAL_OCCURRENCES))->nodeValue = $occurrences;
+
+		$this->_createPaymentScheduleElement()
+			 ->appendChild(new DomElement(self::TRIAL_OCCURRENCES))->nodeValue = $occurrences;
+
 		return $this;
 	}
 
@@ -222,6 +245,13 @@ class Mercantile_Gateways_AuthNetArb_Subscription extends DomDocument
 	public function setAmount($amount)
 	{
 		// TODO validate and test
+
+		if (null === $this->_amountElement) {
+			$this->_amountElement = $this->documentElement->appendChild(
+				new DomElement(self::AMOUNT)
+			);
+		}
+
 		$this->_amountElement->nodeValue = $amount;
 		return $this;
 	}
