@@ -37,6 +37,9 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
         if (is_null($itemInfo))
             throw new Mercantile_Exception('Item info not array, is ' . gettype($itemInfo));
 
+		/**
+		 * Optional
+		 */
 		if (isset($itemInfo[self::MERCHANT_ITEM_ID])) {
 			$this->documentElement->appendChild(new DOMElement(self::MERCHANT_ITEM_ID, $itemInfo[self::MERCHANT_ITEM_ID]));
 		}
@@ -80,4 +83,43 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
         if (!is_float($price))
             throw new Mercantile_Exception('Item price is not float, is ' . gettype($price));
     }
+
+	static public function create(DomElement $element)
+	{
+		$new = get_class($this);
+
+		$merchantItemId = $element->getElementsByTagName(self::MERCHANT_ITEM_ID);
+		
+		if ($merchantItemId->length) {
+			$merchantItemId = $merchantItemId->item(0)->textContent;
+		} else {
+			$merchantItemId = null;
+		}
+
+		$name = $element->getElementsByTagName('item-name')
+						->item(0)
+						->textContent;
+
+		$description = $element->getElementsByTagName('item-description')
+							   ->item(0)
+							   ->textContent;
+
+		$quantity = $element->getElementsByTagName('quantity')
+							->item(0)
+							->textContent;
+
+		$price = $element->getElementsByTagName('unit-price')
+						 ->item(0)
+						 ->textContent;
+
+		$data = array(
+			self::MERCHANT_ITEM_ID => null,
+			self::NAME => null,
+			self::DESCRIPTION => null,
+			self::PRICE => null,
+			self::QUANTITY => null,
+		);
+
+		return new $new($data);
+	}
 }

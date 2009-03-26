@@ -14,6 +14,8 @@ class Mercantile_Gateways_GCheckout_ShoppingCart extends DomDocument
      */
     protected $_itemsNode = null;
 
+	protected $_items = array();
+
     /**
      * Create a GCheckout_ShoppingCart object
      *
@@ -34,18 +36,24 @@ class Mercantile_Gateways_GCheckout_ShoppingCart extends DomDocument
 
     /**
      * Add a GCheckout_Item to the items
-     *
+     * @param Mercantile_Gateways_GCheckout_Item $item
      */
-    public function addItem(DomDocument $item = null)
+    public function addItem(Mercantile_Gateways_GCheckout_Item $item = null)
     {
         // import node and children
         $itemElement = $this->importNode($item->documentElement, $deep = true);
          
         if ($itemElement->tagName == 'item') {
             $this->_itemsNode->appendChild($itemElement);
+			$this->_items[] = $itemElement;
             return true;
         } else {
             throw new Mercantile_Exception('Item tag name not \'item\', is ' . $itemElement->tagName);
         }
     }
+
+	public function getItems()
+	{
+		return $this->_items;
+	}
 }
