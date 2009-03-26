@@ -1,5 +1,5 @@
 <?php
-class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateways_GCheckout_Shipping
+class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateways_GCheckout_Shipping_Abstract
 {
     // @TODO: add validation
     /**
@@ -10,23 +10,14 @@ class Mercantile_Gateways_GCheckout_Shipping_FlatRate extends Mercantile_Gateway
      */
     public function __construct($methodName = null, $price = null)
     {
-        if (!is_string($methodName))
-            throw new Mercantile_Exception('Name must be string, is ' . gettype($methodName));
-
-        // @TODO: deprecate this with Mercantile_Money
-        if (!is_int($price))
-            throw new Mercantile_Exception('Price not int, is ' . gettype($price));
-
-        parent::__construct();
-
-        $this->formatOutput = true;
+        parent::__construct($methodName, $price);
 
         $this->appendChild(new DomElement(self::FLAT_RATE_SHIPPING));
 
         $this->documentElement->setAttribute('name', $methodName);
 
         // @TODO: currency USD, does it BELONG HERE? to be continued ...
-        $this->documentElement->appendChild(new DomElement(self::PRICE, $price))
+        $this->documentElement->appendChild(new DomElement(self::PRICE, number_format($price, 2)))
                               ->setAttribute(self::CURRENCY, 'USD');
     }
 

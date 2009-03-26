@@ -102,6 +102,30 @@ class Mercantile_Gateways_GCheckout
 
     const H = 'h';
 
+	const NEW_ORDER_NOTIFICATION = 'new-order-notification';
+
+	const RISK_INFORMATION_NOTIFICATION = 'risk-information-notification';
+
+	const ORDER_STATE_CHANGE_NOTIFICATION = 'order-state-change-notification';
+
+	const CHARGE_AMOUNT_NOTIFICATION = 'charge-amount-notification';
+	
+	const REFUND_AMOUNT_NOTIFICATION = 'refund-amount-notification';
+
+	const CHARGEBACK_AMOUNT_NOTIFICATION = 'chargeback-amount-notification';
+
+	const AUTHORIZATION_AMOUNT_NOTIFICATION = 'authorization-amount-notification';
+
+	protected $_notificationCallbacks = array(
+		self::NEW_ORDER_NOTIFICATION,
+		self::RISK_INFORMATION_NOTIFICATION,
+		self::ORDER_STATE_CHANGE_NOTIFICATION,
+		self::CHARGE_AMOUNT_NOTIFICATION,
+		self::REFUND_AMOUNT_NOTIFICATION,
+		self::CHARGEBACK_AMOUNT_NOTIFICATION,
+		self::AUTHORIZATION_AMOUNT_NOTIFICATION
+	);
+
 	/**
 	 * HTTP client
 	 */
@@ -151,7 +175,7 @@ class Mercantile_Gateways_GCheckout
 		// @todo: make sure this implements interface
 		$this->_httpClient = $httpClient;
 
-        $this->setTestMode(false);
+        $this->setTestMode(true);
     }
 
     /**
@@ -349,4 +373,57 @@ class Mercantile_Gateways_GCheckout
 
         return $response;
     }
+
+	/**
+	 * Takes in an XML callback and returns it's appropriate Response object,
+	 * handshakes
+	 *
+	 * @param string $rawXml Response XML string
+	 * @return Mercantile_Gateways_GCheckout_Response_*
+	 */
+	public function parseCallback($rawXml)
+	{
+		if (!is_string($rawXml)) {
+			throw new Mercantile_Exception('Mercantile_Gateways_GCheckout::parseCallback(): ' .
+				'argument 1 must be a string, is ' . gettype($rawXml));
+		}
+
+		$response = new DomDocument(self::XML_VERSION, self::XML_ENCODING);
+
+		$response->loadXML($rawXml);
+
+		$rootTagName = $response->documentElement->tagName;
+
+		if (!in_array($rootTagName, $this->_notificationCallbacks)) {
+			throw new Mercantile_Exception($rootTagName . ' not in $this->_notificationCallbacks');
+		}
+
+		switch ($rootTagName) {
+			case self::NEW_ORDER_NOTIFICATION:
+				$className = 'Mercantile_Gateways_GCheckout_Response_NewOrderNotification';
+			break;
+			case self::RISK_INFORMATION_NOTIFICATION:
+
+			break;
+			case self::ORDER_STATE_CHANGE_NOTIFICATION:
+
+			break;
+			case self::CHARGE_AMOUNT_NOTIFICATION:
+
+			break;
+			case self::REFUND_AMOUNT_NOTIFICATION:
+
+			break;
+			case self::CHARGEBACK_AMOUNT_NOTIFICATION:
+
+			break;
+			case self::AUTHORIZATION_AMOUNT_NOTIFICATION:
+
+			break;
+			default:
+			break;
+		}
+
+		//return new $className(
+	}
 }

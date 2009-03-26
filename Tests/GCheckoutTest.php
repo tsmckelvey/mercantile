@@ -5,7 +5,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->id = 647466365709363;
+        $this->id = '647466365709363';
         $this->key = 'scr_6v-GWoH6joavwNoM7Q';
 
         $this->credentials = array(
@@ -41,7 +41,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'merchant_key'=> $this->key
             );
 
-        $checkout = new Mercantile_Gateways_GCheckout($credentials);
+        $checkout = new Mercantile_Gateways_GCheckout($credentials, new Zend_Http_Client());
 
         $this->assertType('Mercantile_Gateways_GCheckout', $checkout);
     }
@@ -50,7 +50,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
         $credentials = array();
 
         try {
-            $checkout = new Mercantile_Gateways_GCheckout($credentials);
+            $checkout = new Mercantile_Gateways_GCheckout($credentials, new Zend_Http_Client());
         } catch (Mercantile_Exception $e) {
             return;
         }
@@ -64,7 +64,9 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
             'merchant_key' => $this->key
             );
 
-        $response = Mercantile_Gateways_GCheckout::testCredentials($credentials);
+        $checkout = new Mercantile_Gateways_GCheckout($credentials, new Zend_Http_Client());
+
+        $response = $checkout->testCredentials($credentials);
 
         $this->assertType('Mercantile_Gateways_GCheckout_Response', $response);
         $this->assertTrue($response->isSuccess());
@@ -95,7 +97,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSendCheckoutRequest_setShoppingCartAndRequestSucceeds()
     {
-        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $cart = new Mercantile_Gateways_GCheckout_ShoppingCart();
 
@@ -120,7 +122,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSendCheckoutRequest_setShoppingCartNoCheckoutFlowSupportAndSucceeds()
     {
-        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
@@ -132,7 +134,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSetShoppingCart_sendRequestWithFlowSupportAndShippingParams()
     {
-        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gcheckout = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $options = array('edit-cart-url' => 'http://www.something.com');
             
@@ -161,7 +163,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSendCheckoutRequest_sendRequestWithMultipleFlatRateShippingMethods()
     {
-        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
@@ -181,7 +183,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSendCheckoutRequest_sendRequestWithNonDefaultRoundingPolicy()
     {
-        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
@@ -196,7 +198,7 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
     }
     public function testSendCheckoutRequest_sendRequestWithExcludedAreas()
     {
-        $gateway = new Mercantile_Gateways_GCheckout($this->credentials);
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
 
         $checkout = new Mercantile_Gateways_GCheckout_Checkout();
 
@@ -216,9 +218,40 @@ class GCheckoutTest extends PHPUnit_Framework_TestCase
         $shippingMethod->setShippingRestrictions($restrictions);
 
         $checkout->addShippingMethod($shippingMethod);
+	print_r($checkout->saveXML());exit;
 
         $response = $gateway->sendCheckoutRequest($checkout);
 
         $this->assertTrue($response->isSuccess());
+    }
+
+    public function testSendCheckoutRequest_sendWithMerchantCalculationUrl()
+    {
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
+
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
+
+        $checkout->setShoppingCart($this->loadedCart)
+		 ->setMerchantCalculationsUrl('http://secure.slvrfsh.net/google');
+
+        $response = $gateway->sendCheckoutRequest($checkout);
+
+        $this->assertTrue($response->isSuccess());
+    }
+
+    public function testSendCheckoutRequest_sendWithMerchantCalculatedShipping()
+    {
+        $gateway = new Mercantile_Gateways_GCheckout($this->credentials, new Zend_Http_Client());
+
+        $checkout = new Mercantile_Gateways_GCheckout_Checkout();
+
+        $checkout->setShoppingCart($this->loadedCart)
+		 ->setMerchantCalculationsUrl('http://secure.slvrfsh.net/google');
+	
+	$shippingMethod = new Mercantile_Gateways_GCheckout_Shipping_MerchantCalculated('merchant calculated');
+
+	$checkout->addShippingMethod($shippingMethod);
+
+        $response = $gateway->sendCheckoutRequest($checkout);
     }
 }

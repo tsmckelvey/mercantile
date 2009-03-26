@@ -1,9 +1,10 @@
 <?php
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/Exception.php';
 /**
  * @package Mercantile_Gateways
  * @subpackage GCheckout
  */
-abstract class Mercantile_Gateways_GCheckout_Shipping extends DOMDocument
+abstract class Mercantile_Gateways_GCheckout_Shipping_Abstract extends DOMDocument
 {
     /**
      * name attribute of shipping methods
@@ -158,4 +159,19 @@ abstract class Mercantile_Gateways_GCheckout_Shipping extends DOMDocument
         self::ALLOWED_AREAS,
         self::EXCLUDED_AREAS,
         );
+
+	public function __construct($methodName = null, $price = null)
+	{
+		if (!is_string($methodName)) {
+			throw new Mercantile_Exception(get_class($this) . '::__construct() first argument must be string');
+		}
+		
+		if (!is_float($price)) {
+			throw new Mercantile_Exception(get_class($this) . '::__construct() second argument must be float');
+		}
+
+		parent::__construct();
+
+        $this->formatOutput = true;
+	}
 }

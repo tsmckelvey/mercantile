@@ -3,7 +3,8 @@ error_reporting(E_ALL|E_STRICT);
 
 set_include_path(
                 '.'
-                . PATH_SEPARATOR . '/var/milk/lib'
+		. PATH_SEPARATOR . dirname(__FILE__)
+                . PATH_SEPARATOR . '/opt/milksites/library'
                 . PATH_SEPARATOR . get_include_path()
                 );
 

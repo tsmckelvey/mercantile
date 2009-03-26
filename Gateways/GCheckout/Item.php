@@ -8,6 +8,8 @@
  */
 class Mercantile_Gateways_GCheckout_Item extends DomDocument
 {
+	const MERCHANT_ITEM_ID = 'merchant-item-id';
+
     const NAME = 'name';
 
     const DESCRIPTION = 'description';
@@ -34,6 +36,10 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 
         if (is_null($itemInfo))
             throw new Mercantile_Exception('Item info not array, is ' . gettype($itemInfo));
+
+		if (isset($itemInfo[self::MERCHANT_ITEM_ID])) {
+			$this->documentElement->appendChild(new DOMElement(self::MERCHANT_ITEM_ID, $itemInfo[self::MERCHANT_ITEM_ID]));
+		}
 
         if (!isset($itemInfo[self::NAME]) or !is_string($itemInfo[self::NAME]))
             throw new Mercantile_Exception('Item name not string, is ' . gettype($itemInfo[self::NAME]));

@@ -28,9 +28,15 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
     // http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_merchant-checkout-flow-support
     const MERCHANT_CHECKOUT_FLOW_SUPPORT  = 'merchant-checkout-flow-support';
 
+	const MERCHANT_CALCULATIONS = 'merchant-calculations';
+
+	const MERCHANT_CALCULATIONS_URL = 'merchant-calculations-url';
+
     // Shipping methods container element
     // http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_shipping-methods
     const SHIPPING_METHODS = 'shipping-methods';
+
+	const MERCHANT_CALCULATED_SHIPPING = 'merchant-calculated-shipping';
 
     // option 
     // http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_edit-cart-url
@@ -130,8 +136,9 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
         $this->documentElement->setAttribute('xmlns', self::CHECKOUT_XML_SCHEMA);
 
         // initialize flow support
-        $this->_flowSupportNode = $this->documentElement->appendChild(new DomElement(self::CHECKOUT_FLOW_SUPPORT))
-                                                    ->appendChild(new DomElement(self::MERCHANT_CHECKOUT_FLOW_SUPPORT));
+        $this->_flowSupportNode = $this->documentElement
+									   ->appendChild(new DomElement(self::CHECKOUT_FLOW_SUPPORT))
+                                       ->appendChild(new DomElement(self::MERCHANT_CHECKOUT_FLOW_SUPPORT));
 
         // initialize optional params
         foreach ($options as $option => $value) {
@@ -143,6 +150,20 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
     {
         return $this->saveXML($this->documentElement);
     }
+
+	public function setMerchantCalculationsUrl($url)
+	{
+		if (!Zend_Uri::check($url)) {
+			throw new Mercantile_Exception(get_class($this) . '::setMerchantCalculationsUrl() arg 1 must be valid URL');
+		}
+
+		$this->_flowSupportNode->appendChild(new DomElement(self::MERCHANT_CALCULATIONS));
+		$this->_flowSupportNode->getElementsByTagName(self::MERCHANT_CALCULATIONS)
+							   ->item(0)
+							   ->appendChild(new DomElement(self::MERCHANT_CALCULATIONS_URL, $url));
+
+		return $this;
+	}
 
     /**
      * Set an option value
@@ -191,6 +212,8 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
         }
 
         $this->_flowSupportNode->appendChild(new DomElement($option, $value));
+
+		return $this;
     }
 
     /**
@@ -231,7 +254,7 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
 
             $this->documentElement->appendChild($cartElement);
 
-            return true;
+            return $this;
         } else {
             throw new Mercantile_Exception('Shopping cart not \'shopping-cart\', is ' . $cartElement->tagName);
         }
@@ -242,13 +265,25 @@ class Mercantile_Gateways_GCheckout_Checkout extends DomDocument
      *
      * @param Mercantile_Gateways_GCheckout_Shipping $method The shipping method to add
      */
-    public function addShippingMethod(Mercantile_Gateways_GCheckout_Shipping $method = null)
+    public function addShippingMethod(Mercantile_Gateways_GCheckout_Shipping_Abstract $method = null)
     {
         $method = $this->importNode($method->documentElement, $deep = true);
 
         // if method tag name == 
-        if ($this->_flowSupportNode->getElementsByTagName(self::SHIPPING_METHODS)->length == 0)
+        if ($this->_flowSupportNode->getElementsByTagName(self::SHIPPING_METHODS)->length == 0) {
             $this->_flowSupportNode->appendChild(new DomElement(self::SHIPPING_METHODS));
+		}
+
+		/**
+		 * MCS cannot be mixed with other shipping methods
+		 */
+		if ($method->tagName === self::MERCHANT_CALCULATED_SHIPPING) {
+			$methods = $this->_flowSupportNode->getElementsByTagName(self::SHIPPING_METHODS)->item(0);
+
+			foreach ($methods as $m) {
+				$methods->removeChild($m);
+			}
+		}
 
         $this->_flowSupportNode->getElementsByTagName(self::SHIPPING_METHODS)
                                ->item(0)
