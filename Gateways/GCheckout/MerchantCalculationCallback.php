@@ -1,5 +1,5 @@
 <?php
-class Mercantile_Gateways_GCheckout_Response_MerchantCalculation extends DomDocument
+class Mercantile_Gateways_GCheckout_MerchantCalculationCallback extends DomDocument
 {
 	const SERIAL_NUMBER = 'serial-number';
 
@@ -14,6 +14,8 @@ class Mercantile_Gateways_GCheckout_Response_MerchantCalculation extends DomDocu
 	const ADDRESSES = 'addresses';
 
 	const ANONYMOUS_ADDRESS = 'anonymous-address';
+
+	const ID = 'id';
 
 	const COUNTRY_CODE = 'country-code';
 
@@ -160,5 +162,18 @@ class Mercantile_Gateways_GCheckout_Response_MerchantCalculation extends DomDocu
 		$this->_region = $region;
 
 		return $region;
+	}
+
+	public function getAnonymousAddressId()
+	{
+		$id = $this->documentElement
+				   ->getElementsByTagName(self::CALCULATE)
+				   ->item(0)
+				   ->getElementsByTagName(self::ADDRESSES)
+				   ->item(0)
+				   ->getElementsByTagName(self::ANONYMOUS_ADDRESS)
+				   ->getAttribute(self::ID);
+
+		return $id;
 	}
 }
