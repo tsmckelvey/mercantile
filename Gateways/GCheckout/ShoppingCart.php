@@ -45,7 +45,7 @@ class Mercantile_Gateways_GCheckout_ShoppingCart extends DomDocument
          
         if ($itemElement->tagName == 'item') {
             $this->_itemsNode->appendChild($itemElement);
-			$this->_items[] = $itemElement;
+			$this->_items[] = $item;
             return true;
         } else {
             throw new Mercantile_Exception('Item tag name not \'item\', is ' . $itemElement->tagName);

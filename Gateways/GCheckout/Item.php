@@ -26,6 +26,14 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 
     //protected $_merchPrivateItemData = null;
 
+	protected $_data = array(
+		self::MERCHANT_ITEM_ID => null,
+		self::NAME => null,
+		self::DESCRIPTION => null,
+		self::PRICE => null,
+		self::QUANTITY => null,
+	);
+
     public function __construct(array $itemInfo = null)
     {
         parent::__construct('1.0', 'utf-8');
@@ -42,17 +50,20 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 		 */
 		if (isset($itemInfo[self::MERCHANT_ITEM_ID])) {
 			$this->documentElement->appendChild(new DOMElement(self::MERCHANT_ITEM_ID, $itemInfo[self::MERCHANT_ITEM_ID]));
+			$this->_data[self::MERCHANT_ITEM_ID] = $itemInfo[self::MERCHANT_ITEM_ID];
 		}
 
         if (!isset($itemInfo[self::NAME]) or !is_string($itemInfo[self::NAME]))
             throw new Mercantile_Exception('Item name not string, is ' . gettype($itemInfo[self::NAME]));
 
         $this->documentElement->appendChild(new DOMElement('item-name', $itemInfo[self::NAME]));
+		$this->_data[self::NAME] = $itemInfo[self::NAME];
 
         if (!isset($itemInfo[self::DESCRIPTION]) or !is_string($itemInfo[self::DESCRIPTION]))
             throw new Mercantile_Exception('Item description not string, is ' . gettype($itemInfo[self::DESCRIPTION]));
 
         $this->documentElement->appendChild(new DOMElement('item-description', $itemInfo[self::DESCRIPTION]));
+		$this->_data[self::DESCRIPTION] = $itemInfo[self::DESCRIPTION];
 
 		// price parsing
 		if (!isset($itemInfo[self::PRICE]) ||
@@ -61,18 +72,25 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 		}
 
         $price = $this->documentElement->appendChild(new DOMElement('unit-price', $itemInfo[self::PRICE]));
+		$this->_data[self::PRICE] = $itemInfo[self::PRICE];
         $price->setAttribute('currency', 'USD');
 
         if (!isset($itemInfo[self::QUANTITY]) or !is_int($itemInfo[self::QUANTITY]))
             throw new Mercantile_Exception('Item quantity not integer, is ' . gettype($itemInfo[self::QUANTITY]));
 
         $this->documentElement->appendChild(new DOMElement('quantity', $itemInfo[self::QUANTITY]));
+		$this->_data[self::QUANTITY] = $itemInfo[self::QUANTITY];
     }
 
     public function __toString()
     {
         return $this->saveXML($this->documentElement);
     }
+
+	public function toArray()
+	{
+		return $this->_data;
+	}
 
     /**
      * Set unit-price and currency
@@ -83,6 +101,31 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
         if (!is_float($price))
             throw new Mercantile_Exception('Item price is not float, is ' . gettype($price));
     }
+
+	public function getMerchantItemId()
+	{
+		return $this->_data[self::MERCHANT_ITEM_ID];
+	}
+
+	public function getName()
+	{
+		return $this->_data[self::NAME];
+	}
+
+	public function getDescription()
+	{
+		return $this->_data[self::DESCRIPTION];
+	}
+
+	public function getPrice()
+	{
+		return $this->_data[self::PRICE];
+	}
+
+	public function getQuantity()
+	{
+		return $this->_data[self::QUANTITY];
+	}
 
 	static public function create(DomElement $element)
 	{
@@ -113,13 +156,13 @@ class Mercantile_Gateways_GCheckout_Item extends DomDocument
 						 ->textContent;
 
 		$data = array(
-			self::MERCHANT_ITEM_ID => null,
-			self::NAME => null,
-			self::DESCRIPTION => null,
-			self::PRICE => null,
-			self::QUANTITY => null,
+			self::MERCHANT_ITEM_ID => $merchantItemId,
+			self::NAME => $name,
+			self::DESCRIPTION => $description,
+			self::PRICE => $price,
+			self::QUANTITY => (int) $quantity,
 		);
 
-		return new $new($data);
+		return new Mercantile_Gateways_GCheckout_Item($data);
 	}
 }
