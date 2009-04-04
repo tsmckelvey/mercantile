@@ -1,9 +1,6 @@
 <?php
 /**
  * Response to MerchantCalculationCallback
- * 
- * TODO: taxes
- * TODO: gift certificates / coupons
  */
 class Mercantile_Gateways_GCheckout_MerchantCalculationResults extends DomDocument
 {
